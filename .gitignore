@@ -1,0 +1,11 @@
+# Arduino CLI / IDE build artifacts
+build/
+*.elf
+*.hex
+*.eep
+*.bin
+
+# OS / editor noise
+Thumbs.db
+Desktop.ini
+*.code-workspace
