@@ -9,13 +9,14 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 - Antriebsmotor fuer die Winde
 - ACS712 Stromsensor
 - Hall-Sensor `KY-003` mit `A3144`
-- `2 bis 4` Magnete an der Trommel oder einem drehenden Teil
+- `2` Magnete an der Trommel oder einem drehenden Teil
 - Endschalter fuer Seil-Endlage
 - RC-Empfaenger mit zwei Kanaelen
 
 ## Aktueller Referenzstand der Teile
 
 - Hall-Sensor: `KY-003 A3144`
+- Magnetanzahl: `2`
 - ESC-Referenz: `Turnigy Plush 30A`
 - Endschalter: Typ noch offen, von Eigenbau bis Mikroschalter moeglich
 - ACS712: genaue Modulbezeichnung noch nachtragen
@@ -59,11 +60,10 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 ## Hall-Sensor und Magnetanordnung
 
 - Verwendet wird ein `KY-003`-Modul mit `A3144`.
-- Moeglich sind `2`, `3` oder `4` Magnete.
-- Fuer den ersten Aufbau sind `2` Magnete gleichmaessig verteilt ein guter Start.
-- `4` Magnete geben eine feinere Aufloesung fuer Lernen und Endphase, brauchen aber eine saubere mechanische Platzierung.
+- Gestartet wird mit `2` Magneten.
+- Die beiden Magnete sollten gleichmaessig um `180 Grad` versetzt sitzen.
 - Wichtig ist vor allem gleichmaessiger Abstand und eine reproduzierbare Flanke am Sensor.
-- Die Firmware arbeitet pulsbezogen, deshalb muss nur spaeter dokumentiert werden, wie viele Pulse pro Trommelumdrehung tatsaechlich entstehen.
+- Damit entstehen in der Grundannahme `2` Hall-Pulse pro Trommelumdrehung.
 
 ## Schutzbeschaltung
 
@@ -137,6 +137,12 @@ Das ist derzeit ein sauberer Verdrahtungs- und Anschlussplan, aber noch kein fer
 - Steckverbinder
 
 Mit diesen Angaben kann als naechster Schritt ein echter Schaltplan in KiCad aufgebaut werden.
+
+## Schaltplan-Datei
+
+Ein erster sauberer Schaltplan fuer den Aufbau liegt als SVG hier:
+
+- `docs/schaltplan_v2.svg`
 
 ## Erste Hardware-Checks vor Motorlauf
 

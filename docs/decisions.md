@@ -20,7 +20,7 @@ Begruendung:
 Ergaenzung:
 
 - Referenzsensor ist `KY-003 A3144`
-- vorgesehen sind `2 bis 4` Magnete
+- Startkonfiguration sind `2` Magnete mit `2` Pulsen pro Trommelumdrehung
 
 ### 3. Endschalter auf `D7`
 

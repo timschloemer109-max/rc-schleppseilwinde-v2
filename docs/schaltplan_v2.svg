@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980">
+  <rect width="1600" height="980" fill="#f7f4eb"/>
+  <text x="50" y="60" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" fill="#1f2933">RC-Schleppseilwinde V2.0 - Schaltplan</text>
+  <text x="50" y="95" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#4b5563">Startkonfiguration: 2 Magnete, KY-003 A3144, Arduino Nano, Turnigy Plush 30A</text>
+
+  <defs>
+    <style>
+      .box { fill:#fffdf8; stroke:#1f2933; stroke-width:2; rx:14; ry:14; }
+      .title { font-family:Arial, Helvetica, sans-serif; font-size:22px; font-weight:700; fill:#1f2933; }
+      .text { font-family:Arial, Helvetica, sans-serif; font-size:16px; fill:#24323f; }
+      .small { font-family:Arial, Helvetica, sans-serif; font-size:14px; fill:#425466; }
+      .wire { stroke:#166534; stroke-width:4; fill:none; }
+      .sig { stroke:#1d4ed8; stroke-width:4; fill:none; }
+      .power { stroke:#b91c1c; stroke-width:4; fill:none; }
+      .gnd { stroke:#374151; stroke-width:4; fill:none; }
+      .mech { stroke:#7c3aed; stroke-width:3; fill:none; stroke-dasharray:8 6; }
+      .node { fill:#111827; }
+    </style>
+  </defs>
+
+  <rect x="80" y="150" width="330" height="290" class="box"/>
+  <text x="105" y="190" class="title">Arduino Nano</text>
+  <text x="105" y="225" class="text">D2  Hall Sensor</text>
+  <text x="105" y="255" class="text">D3  RC Speed</text>
+  <text x="105" y="285" class="text">D4  ESC Signal</text>
+  <text x="105" y="315" class="text">D5  RC Trigger</text>
+  <text x="105" y="345" class="text">D7  Endschalter</text>
+  <text x="105" y="375" class="text">A3  ACS712 OUT</text>
+  <text x="105" y="405" class="text">5V / GND gemeinsam</text>
+
+  <rect x="1240" y="120" width="260" height="220" class="box"/>
+  <text x="1270" y="160" class="title">RC-Empfaenger</text>
+  <text x="1270" y="200" class="text">CH Speed - Signal</text>
+  <text x="1270" y="230" class="text">CH Trigger - Signal</text>
+  <text x="1270" y="260" class="text">+5V</text>
+  <text x="1270" y="290" class="text">GND</text>
+
+  <rect x="1180" y="420" width="320" height="250" class="box"/>
+  <text x="1210" y="460" class="title">Brushless ESC</text>
+  <text x="1210" y="500" class="text">Turnigy Plush 30A</text>
+  <text x="1210" y="530" class="text">Signal von D4</text>
+  <text x="1210" y="560" class="text">BEC 5V -> Nano / Empfaenger / Sensoren</text>
+  <text x="1210" y="590" class="text">Motorausgang -> Windenmotor</text>
+  <text x="1210" y="620" class="text">Akku + / -</text>
+
+  <rect x="1130" y="760" width="370" height="140" class="box"/>
+  <text x="1160" y="800" class="title">Antriebsakku</text>
+  <text x="1160" y="835" class="text">Versorgt den ESC-Leistungsteil</text>
+  <text x="1160" y="865" class="text">Gemeinsame Masse mit Nano und Empfaenger</text>
+
+  <rect x="600" y="140" width="270" height="210" class="box"/>
+  <text x="630" y="180" class="title">Hall-Sensor</text>
+  <text x="630" y="215" class="text">KY-003 mit A3144</text>
+  <text x="630" y="245" class="text">OUT -> D2</text>
+  <text x="630" y="275" class="text">VCC -> 5V</text>
+  <text x="630" y="305" class="text">GND -> GND</text>
+
+  <circle cx="930" cy="190" r="28" fill="#fde68a" stroke="#92400e" stroke-width="3"/>
+  <circle cx="980" cy="190" r="28" fill="#fde68a" stroke="#92400e" stroke-width="3"/>
+  <text x="905" y="245" class="small">2 Magnete an Trommel</text>
+
+  <rect x="600" y="420" width="270" height="170" class="box"/>
+  <text x="630" y="460" class="title">Endschalter</text>
+  <text x="630" y="495" class="text">Mechanischer Kontakt</text>
+  <text x="630" y="525" class="text">nach D7 und GND</text>
+  <text x="630" y="555" class="text">Firmware aktuell active-low</text>
+
+  <rect x="520" y="700" width="360" height="180" class="box"/>
+  <text x="550" y="740" class="title">ACS712</text>
+  <text x="550" y="775" class="text">OUT -> A3</text>
+  <text x="550" y="805" class="text">VCC -> 5V</text>
+  <text x="550" y="835" class="text">GND -> GND</text>
+  <text x="550" y="865" class="text">Strompfad im Leistungsteil zur Winde</text>
+
+  <rect x="980" y="700" width="260" height="160" class="box"/>
+  <text x="1010" y="740" class="title">Windenmotor</text>
+  <text x="1010" y="775" class="text">Brushless-Motor</text>
+  <text x="1010" y="805" class="text">vom ESC angetrieben</text>
+
+  <path d="M 410 255 L 1240 200" class="sig"/>
+  <path d="M 410 315 L 1240 230" class="sig"/>
+  <text x="830" y="210" class="small">CH Speed -> D3</text>
+  <text x="820" y="270" class="small">CH Trigger -> D5</text>
+
+  <path d="M 410 285 L 1180 530" class="sig"/>
+  <text x="760" y="430" class="small">D4 -> ESC Signal</text>
+
+  <path d="M 410 225 L 600 245" class="sig"/>
+  <text x="455" y="220" class="small">D2</text>
+
+  <path d="M 410 345 L 600 525" class="sig"/>
+  <text x="465" y="395" class="small">D7</text>
+
+  <path d="M 410 375 L 520 775" class="sig"/>
+  <text x="430" y="610" class="small">A3</text>
+
+  <path d="M 1330 670 L 1110 700" class="wire"/>
+  <path d="M 1260 590 L 1110 775" class="wire"/>
+  <text x="1110" y="680" class="small">Motorleitungen</text>
+
+  <path d="M 1330 670 L 1330 760" class="power"/>
+  <path d="M 1290 670 L 1290 760" class="gnd"/>
+  <text x="1342" y="728" class="small">Akku +</text>
+  <text x="1250" y="728" class="small">Akku -</text>
+
+  <path d="M 1320 420 L 1320 320 L 210 320 L 210 440" class="power"/>
+  <path d="M 1290 420 L 1290 350 L 250 350 L 250 440" class="gnd"/>
+  <path d="M 1320 320 L 1330 320 L 1330 260" class="power"/>
+  <path d="M 1290 350 L 1330 350 L 1330 290" class="gnd"/>
+  <path d="M 1320 320 L 760 320 L 760 350" class="power"/>
+  <path d="M 1290 350 L 790 350 L 790 350" class="gnd"/>
+  <path d="M 1320 320 L 700 320 L 700 880" class="power"/>
+  <path d="M 1290 350 L 740 350 L 740 880" class="gnd"/>
+  <text x="1010" y="308" class="small">BEC 5V</text>
+  <text x="1000" y="375" class="small">gemeinsame Masse</text>
+
+  <path d="M 870 245 L 930 190" class="mech"/>
+  <path d="M 870 245 L 980 190" class="mech"/>
+  <text x="875" y="150" class="small">Trommel / drehendes Teil</text>
+
+  <path d="M 760 590 L 760 640 L 250 640 L 250 350" class="gnd"/>
+  <text x="610" y="632" class="small">Endschalter nach GND</text>
+
+  <circle cx="410" cy="255" r="5" class="node"/>
+  <circle cx="410" cy="285" r="5" class="node"/>
+  <circle cx="410" cy="345" r="5" class="node"/>
+  <circle cx="410" cy="375" r="5" class="node"/>
+  <circle cx="1320" cy="320" r="5" class="node"/>
+  <circle cx="1290" cy="350" r="5" class="node"/>
+
+  <text x="80" y="935" class="small">Hinweis: Das ist ein dokumentierter Aufbau-Schaltplan fuer das GitHub-Projekt. Fuer einen vollwertigen E-CAD-Plan in KiCad muessen konkrete Steckverbinder und die ACS712-Modulvariante noch festgelegt werden.</text>
+</svg>

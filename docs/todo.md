@@ -3,7 +3,7 @@
 ## Vor dem ersten Flugbetrieb
 
 - Hall-Sensor-Typ und Magnetposition festlegen
-- Magnetanzahl final festlegen: `2`, `3` oder `4`
+- Magnetanzahl final festgelegt: `2`
 - Anzahl Hall-Pulse pro Trommelumdrehung messen
 - ESC-Typ und BEC-Stromreserve dokumentieren
 - `Turnigy Plush 30A` im Aufbau dokumentieren

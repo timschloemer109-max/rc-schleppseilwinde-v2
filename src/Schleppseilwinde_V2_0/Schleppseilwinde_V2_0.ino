@@ -16,7 +16,7 @@
 
   Hardware-Referenz:
   - Hall-Sensor KY-003 mit A3144
-  - 2 bis 4 Magnete an der Trommel
+  - 2 Magnete an der Trommel
   - ESC z. B. Turnigy Plush 30A
 */
 
@@ -46,6 +46,7 @@ namespace RcPwm {
 namespace Config {
   constexpr bool SERIAL_DEBUG = true;
   constexpr unsigned long DEBUG_INTERVAL_MS = 250UL;
+  constexpr uint8_t HALL_PULSES_PER_REV = 2;
 
   constexpr bool END_SWITCH_ACTIVE_LOW = true;
   constexpr unsigned long MAX_RUN_TIME_MS = 20000UL;

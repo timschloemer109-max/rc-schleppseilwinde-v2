@@ -19,7 +19,7 @@ Dieses Projekt entwickelt die Steuerung einer RC-Schleppseilwinde fuer Modellflu
 ## Aktueller Referenz-Hardwarestand
 
 - Hall-Sensor: `KY-003` mit `A3144`
-- Magnete: `2 bis 4` Stueck an Trommel oder drehendem Teil
+- Magnete: `2` Stueck an Trommel oder drehendem Teil
 - ESC-Referenz: `Turnigy Plush 30A`
 - Stromsensor: `ACS712`, genaue Modulvariante noch nachtragen
 - Endschalter: noch offen, bisher auch einfache Eigenbau-Loesung moeglich
