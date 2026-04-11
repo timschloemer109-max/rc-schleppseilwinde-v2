@@ -25,6 +25,7 @@ Die Steuerung soll eine RC-Seilwinde robust, nachvollziehbar und hardwaretauglic
 ## Festgelegter V2.0-Stand
 
 - Arbeitsdatei: `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- Werkbank-Test: `src/Schleppseilwinde_Testbench/Schleppseilwinde_Testbench.ino`
 - Hall-Sensor: `D2`
 - Endschalter: `D7`
 - RC Speed: `D3`
@@ -32,6 +33,9 @@ Die Steuerung soll eine RC-Seilwinde robust, nachvollziehbar und hardwaretauglic
 - ESC Signal: `D4`
 - ACS712: `A3`
 - LED: `D13`
+
+Der Testbench-Sketch ist nur fuer beaufsichtigte Werkbanktests ohne RC-Empfaenger gedacht und ersetzt die Endschalter-Absicherung nicht.
+Im aktuellen Zwischenstand der Hauptfirmware wird der ACS712-Wert seriell beobachtet, aber die Stromschwelle wird erst nach Lasttests mit Seil als Fehlerkriterium aktiviert.
 
 ## Dokumentationspflicht
 

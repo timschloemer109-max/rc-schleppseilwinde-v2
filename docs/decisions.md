@@ -48,6 +48,11 @@ Begruendung:
 - hoher Strom allein darf im Flug nicht zum Fehlstopp fuehren
 - eine kurze Startmaske verhindert falsche Fehler beim Anlaufen
 
+Zwischenstand:
+
+- bis belastbare Lasttests mit Seil vorliegen, wird der ACS712 in der Hauptfirmware nur beobachtet und weiter seriell ausgegeben
+- die eigentliche Ausloeseschwelle fuer Stall wird erst danach final festgelegt
+
 ### 6. ACS712 wird beim Einschalten auf Nullpunkt eingemessen
 
 Begruendung:
@@ -72,6 +77,20 @@ Begruendung:
 - Seillaenge und Wickelbild schwanken
 - ein gleitender Mittelwert ist robuster als hartes Ueberschreiben
 
+### 9. Werkbank-Test als separater Sketch
+
+Begruendung:
+
+- der Testaufbau hat aktuell noch keinen Endschalter und keinen RC-Empfaenger
+- damit bleibt die Hauptfirmware unvermischt und die Testabsicht eindeutig
+- Hall, ESC und ACS712 koennen so isoliert und reproduzierbar vermessen werden
+
+Ergaenzung:
+
+- Testdatei ist `src/Schleppseilwinde_Testbench/Schleppseilwinde_Testbench.ino`
+- Bedienung erfolgt seriell mit CSV-Ausgabe fuer Codex oder den Serial Monitor
+- der Testbench-Sketch ist nur fuer beaufsichtigte Werkbanktests gedacht
+
 ## Bewusst verworfene oder vertagte Loesungen
 
 ### Rein zeitbasierte Schnell-/Langsamumschaltung
@@ -89,6 +108,10 @@ Vorerst verworfen. Die vorhandene Mechanik gilt als brauchbar, die Verbesserung 
 ### Sofort kompletter Umstieg auf interruptbasierte RC-Messung
 
 Vertagt auf spaeteren Stand. Das ist sinnvoll, aber fuer den ersten V2.0-Hardwareaufbau nicht zwingend der erste Engpass.
+
+### Endschalterlosen Werkbanktest in die Hauptfirmware mischen
+
+Bewusst vermieden. Der temporaere Werkbanktest bleibt ein eigener Sketch, damit die Flug- und Sicherheitslogik der Hauptfirmware nicht aufgeweicht wird.
 
 ### Echter Schaltplan in KiCad ohne feste Teileliste
 

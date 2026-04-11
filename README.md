@@ -15,6 +15,7 @@ Dieses Projekt entwickelt die Steuerung einer RC-Schleppseilwinde fuer Modellflu
 - `seilwinde_1.2.ino` bleibt Referenz fuer den Altstand
 - `winde_controller_v2.ino` bleibt Entwurfsstand
 - `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino` ist die neue Arbeitsbasis
+- `src/Schleppseilwinde_Testbench/Schleppseilwinde_Testbench.ino` ist der separate Werkbank-Sketch fuer ESC-, Hall- und ACS712-Tests ohne RC-Empfaenger
 
 ## Aktueller Referenz-Hardwarestand
 
@@ -37,6 +38,8 @@ seilwinde_2.0/
 |- src/
 |  `- Schleppseilwinde_V2_0/
 |     `- Schleppseilwinde_V2_0.ino
+|  `- Schleppseilwinde_Testbench/
+|     `- Schleppseilwinde_Testbench.ino
 |- seilwinde_1.2.ino
 `- winde_controller_v2.ino
 ```
@@ -53,17 +56,49 @@ seilwinde_2.0/
 | ACS712 | `A3` | Strommessung |
 | Status-LED | `D13` | Fehler-/Statusanzeige |
 
-Die Verdrahtung, Schutzbeschaltung und der schematische Anschlussplan stehen in `docs/hardware.md`.
+Die Verdrahtung, Schutzbeschaltung und der schematische Anschlussplan stehen in `docs/hardware.md`. Gemessene Werkbankwerte und Kalibrierdaten stehen in `docs/calibration.md`.
 
 ## Firmware-Stand V2.0
 
 Die neue Firmware basiert bewusst auf dem V2-Entwurf, nicht auf dem Altcode. Gegenueber dem Vorschlag wurden fuer den ersten Hardwarestand zusaetzlich festgezogen:
 
 - RC-Signalverlust fuehrt nicht versehentlich in `RESET/LEARN`
-- Stall-Erkennung bekommt eine kurze Anlaufmaske
+- Stall-Erkennung bleibt vorbereitet, Strom wird bis zu belastbaren Seiltests aber nur beobachtet
 - ACS712 wird beim Einschalten auf Nullpunkt eingemessen
 - Hall-Impulse werden per Interrupt gezaehlt
 - Lernen wird nur bei plausibler Mindestdauer und Mindestpulszahl uebernommen
+- langsame Endphase ist aktuell fest auf `1180 us` gesetzt
+
+Fuer den aktuellen Zwischenstand gilt:
+
+- `RUN_FAST` nutzt weiter den RC-Speed-Eingang
+- `RUN_SLOW` nutzt einen festen Wert von `1180 us`
+- Stromwerte werden im Debug-Monitor ausgegeben, loesen aber noch keinen Fehler aus
+
+## Werkbank-Testbench
+
+Fuer den aktuellen Aufbau ohne RC-Empfaenger und noch ohne Endschalter gibt es einen separaten Test-Sketch:
+
+- `src/Schleppseilwinde_Testbench/Schleppseilwinde_Testbench.ino`
+
+Der Sketch ist bewusst nur fuer beaufsichtigte Werkbanktests gedacht:
+
+- ESC-Ausgang auf `D4`, Hall-Sensor auf `D2`, ACS712 auf `A3`
+- serielle Steuerung mit `115200` Baud
+- CSV-Telemetrie fuer `PWM`, Strom, Pulse, Pulsrate und grobe Drehzahl
+- keine RC-Logik, keine Lernlogik und kein Ersatz fuer den fehlenden Endschalter
+- harte Laufzeitbegrenzung und Stall-Stopp nur aus hohem Strom plus fehlenden Hall-Impulsen
+- gemessene Anlauf- und Drehzahldaten werden in `docs/calibration.md` gesammelt
+
+Unterstuetzte Befehle:
+
+- `ARM`
+- `STOP`
+- `SET <us>`
+- `SWEEP <start> <end> <step> <hold_ms>`
+- `STATUS`
+- `ZERO`
+- `HELP`
 
 ## Erste Inbetriebnahme
 
@@ -73,6 +108,15 @@ Die neue Firmware basiert bewusst auf dem V2-Entwurf, nicht auf dem Altcode. Geg
 4. ACS712-Nullpunkt im Stillstand kontrollieren.
 5. ESC zuerst ohne Seil und mit kleiner PWM testen.
 6. Erst danach Lernfahrt fuer die Seillaenge machen.
+
+## Erste Inbetriebnahme der Testbench
+
+1. RC-Empfaenger abgesteckt lassen und den Aufbau nur fuer Hall, ACS712 und ESC verdrahten.
+2. Testbench-Sketch auf den Nano laden.
+3. Seriellen Monitor oder Codex mit `115200` Baud verbinden.
+4. Banner, CSV-Kopfzeile und plausiblen ACS712-Nullpunkt pruefen.
+5. Hall-Pulse zunaechst von Hand mit den zwei Magneten an der Trommel pruefen.
+6. Erst danach den Motorstrom anschliessen und mit kleinen `SET`-Schritten anfangen.
 
 ## Dokumentationsregel
 

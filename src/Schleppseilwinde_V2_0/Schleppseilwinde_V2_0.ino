@@ -39,7 +39,7 @@ namespace RcPwm {
   constexpr int PWM_MAX = 2000;
   constexpr int PWM_TRIGGER_RUN = 1800;
   constexpr int PWM_TRIGGER_RESET = 1200;
-  constexpr int PWM_SLOW_FIXED = 1390;
+  constexpr int PWM_SLOW_FIXED = 1180;
   constexpr int PWM_SPEED_FALLBACK = 1500;
 }
 
@@ -50,6 +50,7 @@ namespace Config {
 
   constexpr bool END_SWITCH_ACTIVE_LOW = true;
   constexpr unsigned long MAX_RUN_TIME_MS = 20000UL;
+  constexpr bool CURRENT_MONITOR_ONLY = true;
   constexpr float MAX_CURRENT_A = 25.0f;
   constexpr unsigned long STALL_TIMEOUT_MS = 200UL;
   constexpr unsigned long STALL_ARM_DELAY_MS = 400UL;
@@ -339,6 +340,8 @@ void handleRcSignalFault(bool speedValid, bool triggerValid, RcMode rcMode) {
 }
 
 void updateRunState(float currentA) {
+  (void)currentA;
+
   if (!(g_runState == RunState::RUN_FAST || g_runState == RunState::RUN_SLOW)) {
     return;
   }
@@ -361,6 +364,10 @@ void updateRunState(float currentA) {
       g_runState = RunState::RUN_SLOW;
       debugPrint(F("Wechsel auf SLOW"));
     }
+  }
+
+  if (Config::CURRENT_MONITOR_ONLY) {
+    return;
   }
 
   if ((nowMs - g_runStartMillis) < Config::STALL_ARM_DELAY_MS) {

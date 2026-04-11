@@ -62,8 +62,19 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 - Verwendet wird ein `KY-003`-Modul mit `A3144`.
 - Gestartet wird mit `2` Magneten.
 - Die beiden Magnete sollten gleichmaessig um `180 Grad` versetzt sitzen.
+- Fuer den aktuellen Aufbau sind die beiden Magnete gleich gepolt montiert.
 - Wichtig ist vor allem gleichmaessiger Abstand und eine reproduzierbare Flanke am Sensor.
 - Damit entstehen in der Grundannahme `2` Hall-Pulse pro Trommelumdrehung.
+
+## Werkbank-Teststand ohne Endschalter
+
+- Fuer den aktuellen Werkbanktest ist der Endschalter noch nicht montiert.
+- Verwendet wird dafuer der separate Sketch `src/Schleppseilwinde_Testbench/Schleppseilwinde_Testbench.ino`.
+- Der Test ist nur ohne Seil und unter Aufsicht vorgesehen.
+- Der Motor bleibt bis zum seriellen Kommando `ARM` und einer anschliessenden Fahranweisung bei `1000 us`.
+- Die serielle Ausgabe erfolgt als CSV mit Strom, Hall-Pulsen und PWM-Wert.
+- Eine harte Laufzeitbegrenzung bleibt aktiv.
+- Stall wird auch in der Testbench nur aus hohem Strom plus fehlenden Hall-Impulsen erkannt.
 
 ## Schutzbeschaltung
 
@@ -152,3 +163,12 @@ Ein erster sauberer Schaltplan fuer den Aufbau liegt als SVG hier:
 4. Hall-Pulse von Hand an der Trommel pruefen.
 5. ACS712-Rohwert im Stillstand beobachten.
 6. ESC erst ohne Seil und mit kleiner PWM testen.
+
+## Testbench-Kommandos
+
+- `ARM` schaltet den Test frei, bewegt den Motor aber noch nicht.
+- `STOP` setzt den ESC sofort auf `1000 us`.
+- `SET <us>` haelt einen festen Testwert innerhalb des freigegebenen Testfensters.
+- `SWEEP <start> <end> <step> <hold_ms>` faehrt eine langsame PWM-Rampe.
+- `STATUS` gibt sofort eine CSV-Statuszeile aus.
+- `ZERO` kalibriert den ACS712 im Stillstand neu.
