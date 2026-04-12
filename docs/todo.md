@@ -15,7 +15,7 @@
 
 ## Hardware-Tests
 
-- Endschalter elektrisch und mechanisch pruefen
+- Endschalter elektrisch und mechanisch geprueft, erster echter Seilweg-Endtest erfolgreich
 - Werkbank-Testbench ohne Seil mit angeschlossenem Motor pruefen
 - Hall-Signal mit langsamer und hoher Drehzahl pruefen
 - Stoerfestigkeit der 5-V-Schiene unter Motorlast pruefen
@@ -29,6 +29,9 @@
 - erster Lasttest mit aufgezeichneter CSV gegen `docs/calibration.md` dokumentiert
 - erster Stalltest mit aufgezeichneter CSV gegen `docs/calibration.md` dokumentiert
 - Hauptfirmware: ACS712 vorerst nur beobachten, spaeter wieder als Fehlerkriterium zuschalten
+- Endschalter-Latch und Ruecksetzung ueber `RESET/LEARN` dokumentiert
+- Hauptfirmware: Laufzeit-Failsafe voruebergehend auf `60000 ms` fuer langsames Aufwickeln gesetzt
+- erstes langsames Aufwickeln mit echtem Seil und aktivem Endschalter dokumentiert
 - Start bei `RUN`
 - Weiterlaufen nach Rueckkehr des Schalters in die Mitte
 - sauberer Stopp am Endschalter

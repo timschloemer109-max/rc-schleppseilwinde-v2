@@ -74,6 +74,7 @@ Fuer den aktuellen Zwischenstand gilt:
 - `RUN_FAST` nutzt weiter den RC-Speed-Eingang
 - `RUN_SLOW` nutzt einen festen Wert von `1180 us`
 - Stromwerte werden im Debug-Monitor ausgegeben, loesen aber noch keinen Fehler aus
+- die maximale Laufzeit der Hauptfirmware ist fuer den aktuellen Seilaufbau voruebergehend auf `60000 ms` gesetzt
 
 ## Werkbank-Testbench
 

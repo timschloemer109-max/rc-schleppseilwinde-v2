@@ -49,7 +49,7 @@ namespace Config {
   constexpr uint8_t HALL_PULSES_PER_REV = 2;
 
   constexpr bool END_SWITCH_ACTIVE_LOW = true;
-  constexpr unsigned long MAX_RUN_TIME_MS = 20000UL;
+  constexpr unsigned long MAX_RUN_TIME_MS = 60000UL;
   constexpr bool CURRENT_MONITOR_ONLY = true;
   constexpr float MAX_CURRENT_A = 25.0f;
   constexpr unsigned long STALL_TIMEOUT_MS = 200UL;

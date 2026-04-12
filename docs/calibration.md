@@ -95,6 +95,55 @@ Beobachtung:
 - Damit ist die Werkbank-Logik fuer `hoher Strom plus fehlende Hall-Impulse` im Grundsatz bestaetigt.
 - Die nachlaufende Stromkurve nach dem Stopp zeigt die starke Filterung des ACS712-Signals; fuer spaetere Schwellwerte sollte deshalb immer mit echten Lastmessungen weiter kalibriert werden.
 
+## Endschaltertest in der Hauptfirmware
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- Endschalter an `D7`, active-low gegen `GND`
+- RC-Eingaenge fuer Trigger und Geschwindigkeit waren gueltig angeschlossen
+
+Beobachtung:
+
+- Beim Betaetigen des Endschalters sprang `endLatch` im Debug-Output von `0` auf `1`.
+- `reason=1` bestaetigte den Stoppgrund `END_SWITCH`.
+- Die Verriegelung blieb nach dem Loslassen des Schalters gesetzt, wie vorgesehen.
+- Ein anschliessender kurzer `RESET/LEARN`-Vorgang setzte `endLatch` wieder auf `0`.
+- Der kurze `RESET/LEARN`-Impuls fuehrte wegen `pulses=0` und zu kurzer Dauer zu keinem neuen Lernwert.
+
+Ergebnis:
+
+- Der Endschalter funktioniert elektrisch und logisch wie vorgesehen.
+- Die Ruecksetzung ueber `RESET/LEARN` ist fuer den aktuellen Stand bestaetigt.
+
+## Laufzeit-Failsafe der Hauptfirmware
+
+- Der urspruengliche Wert von `20000 ms` war fuer das sehr langsame Aufwickeln mit losem, noch nicht sauber ausgelegtem Seil zu knapp.
+- Fuer den aktuellen Zwischenstand wurde `MAX_RUN_TIME_MS` in der Hauptfirmware auf `60000 ms` erhoeht.
+- Die Laufzeitbegrenzung bleibt damit aktiv, ist aber fuer den weiteren Werkbankaufbau grosszuegiger.
+
+## Erstes langsames Aufwickeln mit Seil
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- Speed-Kanal im Bereich etwa `1200 us` bis `1230 us`
+- Trigger auf `RUN`
+- Endschalter aktiv angeschlossen
+
+Beobachtung:
+
+- Das Seil konnte langsam weiter aufgewickelt werden.
+- Der Pulszaehler stieg im Lauf bis auf `122`.
+- Der Endschalter stoppte den Vorgang am Ende sauber.
+- Nach dem Lauf stand der Debug-Status auf `endLatch=1`, `faultLatch=0`, `reason=1`.
+- Damit wurde der reale Aufrollvorgang ueber den Endschalter beendet und nicht ueber einen Fehler oder den Laufzeit-Failsafe.
+
+Ergebnis:
+
+- Der erste echte Seil-Aufrolltest mit angeschlossenem Endschalter war erfolgreich.
+- Die Endschalterlogik funktioniert auch im realen Bewegungsablauf.
+
 ## Vorlaeufige Arbeitswerte fuer weitere Tests
 
 - Hall-Pulse pro Umdrehung: `2`
@@ -108,3 +157,4 @@ Beobachtung:
 - pruefen, wie stark die Pulsrate unter Last im Vergleich zum Leerlauf einbricht
 - Vergleich zwischen hoher Last mit drehender Trommel und echtem Stall weiter absichern
 - spaeter Schwellwerte fuer `MAX_CURRENT_A` und Stall sauber aus mehreren Messungen ableiten
+- weitere Aufrolltests mit sauber ausgelegtem Seil dokumentieren
