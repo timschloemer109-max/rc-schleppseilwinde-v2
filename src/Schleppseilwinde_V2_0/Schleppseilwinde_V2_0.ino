@@ -58,8 +58,8 @@ namespace Config {
   constexpr unsigned long LEARN_MIN_DURATION_MS = 2000UL;
   constexpr unsigned long LEARN_MIN_PULSES = 20UL;
   constexpr float LEARN_ALPHA = 0.20f;
-  constexpr float LEARN_MIN_RELATIVE_OLD = 0.50f;
-  constexpr float SLOW_PHASE_FRACTION = 0.80f;
+  constexpr float LEARN_MIN_RELATIVE_OLD = 0.70f;
+  constexpr float SLOW_PHASE_FRACTION = 0.87f;
 
   constexpr unsigned long RC_PULSE_TIMEOUT_US = 25000UL;
   constexpr unsigned long HALL_DEBOUNCE_US = 1000UL;
@@ -132,9 +132,13 @@ unsigned long g_learnStartMillis = 0;
 unsigned long g_lastDebugMillis = 0;
 
 float g_ropePulsesAvg = 0.0f;
+float g_positionPulses = 0.0f;
+float g_positionAtRunStart = 0.0f;
+float g_learnStartPositionPulses = 0.0f;
 float g_currentZeroVoltage = CurrentSense::ADC_REF_V * 0.5f;
 float g_filteredCurrentA = 0.0f;
 int g_lastValidSpeedPwmUs = RcPwm::PWM_SPEED_FALLBACK;
+bool g_positionKnown = false;
 
 void hallISR() {
   const unsigned long nowMicros = micros();
@@ -169,6 +173,10 @@ PulseSnapshot snapshotPulses() {
 
 float adcToVoltage(int adcValue) {
   return (static_cast<float>(adcValue) * CurrentSense::ADC_REF_V) / CurrentSense::ADC_COUNTS;
+}
+
+float nonNegative(float value) {
+  return (value >= 0.0f) ? value : 0.0f;
 }
 
 void loadPersistentData() {
@@ -257,7 +265,31 @@ void resetFaults() {
   g_runState = RunState::IDLE;
 }
 
+void syncRunPositionFromSnapshot(const PulseSnapshot &pulses) {
+  if (!g_positionKnown) {
+    return;
+  }
+
+  const float runPulses = static_cast<float>(pulses.pulseCount - g_pulsesAtRunStart);
+  g_positionPulses = nonNegative(g_positionAtRunStart - runPulses);
+}
+
+void syncRunPositionIfNeeded() {
+  if (!(g_runState == RunState::RUN_FAST || g_runState == RunState::RUN_SLOW)) {
+    return;
+  }
+
+  syncRunPositionFromSnapshot(snapshotPulses());
+}
+
 void stopWithReason(StopReason reason, bool latchFault) {
+  if (reason == StopReason::END_SWITCH) {
+    g_positionKnown = true;
+    g_positionPulses = 0.0f;
+  } else {
+    syncRunPositionIfNeeded();
+  }
+
   g_stopReason = reason;
   g_runState = latchFault ? RunState::FAULT : RunState::IDLE;
 
@@ -271,6 +303,8 @@ void stopWithReason(StopReason reason, bool latchFault) {
 }
 
 void beginLearning() {
+  syncRunPositionIfNeeded();
+  g_learnStartPositionPulses = g_positionKnown ? g_positionPulses : 0.0f;
   resetFaults();
   g_learningActive = true;
   g_learnStartPulses = snapshotPulses().pulseCount;
@@ -298,23 +332,31 @@ void finishLearning() {
 
   if (durationOk && pulsesOk && relativeOk) {
     updateRopeLengthAverage(learnedPulses);
+    g_positionKnown = true;
+    g_positionPulses = static_cast<float>(learnedPulses);
     if (Config::SERIAL_DEBUG) {
       Serial.print(F("Lernwert uebernommen: "));
       Serial.print(learnedPulses);
       Serial.print(F(" Pulse, Mittelwert: "));
       Serial.println(g_ropePulsesAvg, 1);
     }
-  } else if (Config::SERIAL_DEBUG) {
-    Serial.print(F("Lernwert verworfen. pulses="));
-    Serial.print(learnedPulses);
-    Serial.print(F(" durationMs="));
-    Serial.print(durationMs);
-    Serial.print(F(" durationOk="));
-    Serial.print(durationOk);
-    Serial.print(F(" pulsesOk="));
-    Serial.print(pulsesOk);
-    Serial.print(F(" relativeOk="));
-    Serial.println(relativeOk);
+  } else {
+    if (g_positionKnown) {
+      g_positionPulses = g_learnStartPositionPulses + static_cast<float>(learnedPulses);
+    }
+
+    if (Config::SERIAL_DEBUG) {
+      Serial.print(F("Lernwert verworfen. pulses="));
+      Serial.print(learnedPulses);
+      Serial.print(F(" durationMs="));
+      Serial.print(durationMs);
+      Serial.print(F(" durationOk="));
+      Serial.print(durationOk);
+      Serial.print(F(" pulsesOk="));
+      Serial.print(pulsesOk);
+      Serial.print(F(" relativeOk="));
+      Serial.println(relativeOk);
+    }
   }
 
   g_learningActive = false;
@@ -324,6 +366,7 @@ void startRun() {
   const PulseSnapshot pulses = snapshotPulses();
   g_runStartMillis = millis();
   g_pulsesAtRunStart = pulses.pulseCount;
+  g_positionAtRunStart = g_positionKnown ? g_positionPulses : g_ropePulsesAvg;
   g_runState = RunState::RUN_FAST;
   g_stopReason = StopReason::NONE;
   debugPrint(F("RUN gestartet"));
@@ -348,6 +391,11 @@ void updateRunState(float currentA) {
 
   const unsigned long nowMs = millis();
   const PulseSnapshot pulses = snapshotPulses();
+  const float runPulses = static_cast<float>(pulses.pulseCount - g_pulsesAtRunStart);
+
+  if (g_positionKnown) {
+    syncRunPositionFromSnapshot(pulses);
+  }
 
   if ((nowMs - g_runStartMillis) > Config::MAX_RUN_TIME_MS) {
     stopWithReason(StopReason::MAX_RUNTIME, true);
@@ -356,11 +404,12 @@ void updateRunState(float currentA) {
   }
 
   if (g_runState == RunState::RUN_FAST && g_ropePulsesAvg > 0.0f) {
-    const unsigned long runPulses = pulses.pulseCount - g_pulsesAtRunStart;
-    const unsigned long slowThreshold =
-        static_cast<unsigned long>(g_ropePulsesAvg * Config::SLOW_PHASE_FRACTION);
+    const float slowEntryPosition = g_ropePulsesAvg * (1.0f - Config::SLOW_PHASE_FRACTION);
+    const float currentPosition = g_positionKnown ?
+        g_positionPulses :
+        nonNegative(g_positionAtRunStart - runPulses);
 
-    if (runPulses >= slowThreshold) {
+    if (currentPosition <= slowEntryPosition) {
       g_runState = RunState::RUN_SLOW;
       debugPrint(F("Wechsel auf SLOW"));
     }
@@ -434,6 +483,12 @@ void printDebug(const PwmSample &speedSample,
   Serial.print(pulses.pulseCount);
   Serial.print(F(" ropeAvg="));
   Serial.print(g_ropePulsesAvg, 1);
+  Serial.print(F(" pos="));
+  if (g_positionKnown) {
+    Serial.print(g_positionPulses, 1);
+  } else {
+    Serial.print(F("na"));
+  }
   Serial.print(F(" endLatch="));
   Serial.print(g_endSwitchLatched);
   Serial.print(F(" faultLatch="));
@@ -460,6 +515,11 @@ void setup() {
 
   loadPersistentData();
   calibrateCurrentSensor();
+
+  if (isEndSwitchActive()) {
+    g_positionKnown = true;
+    g_positionPulses = 0.0f;
+  }
 
   const unsigned long nowMicros = micros();
   g_lastPulseMicros = nowMicros;

@@ -241,6 +241,70 @@ Ergebnis:
 - Die Hauptfirmware reagiert waehrend des Laufs korrekt auf RC-Signalverlust.
 - Der Antrieb wird in diesem Fall sicher gestoppt und nicht weiter autonom fortgesetzt.
 
+## Kurze Lernfahrt unterhalb der neuen Schwelle
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- gespeicherter Lernwert `ropeAvg = 320.9`
+- absichtlich kurzer `RESET/LEARN`-Vorgang mit nur kleinem Ausziehweg
+
+Beobachtung:
+
+- Die Lernfahrt wurde nach etwa `4909 ms` beendet.
+- Es wurden dabei nur `16` Pulse als Lernstrecke erkannt.
+- Der Debug-Output meldete `Lernwert verworfen. pulses=16 durationMs=4909 durationOk=1 pulsesOk=0 relativeOk=0`.
+
+Ergebnis:
+
+- Die zu kurze Lernfahrt wurde korrekt nicht als neue Seillaenge uebernommen.
+- Sowohl die Mindestpulszahl als auch die neue relative Schwelle griffen wie gewuenscht.
+
+## Neustart mitten im Einfahrweg mit Restweg-Logik
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- gespeicherter Lernwert `ropeAvg = 320.9`
+- bekannte Startposition nach Teil-Auszug: `pos = 143.0`
+- erster `RUN`, danach manueller Abbruch ueber `RESET/LEARN`
+- anschliessend zweiter `RUN` bis zum Endschalter
+
+Beobachtung:
+
+- Vor dem ersten `RUN` stand die geschaetzte Position auf `143.0`.
+- Beim manuellen Abbruch lag die geschaetzte Restposition bei etwa `63.0`.
+- Nach dem kurzen `RESET/LEARN` und dem Verwerfen der Mini-Lernfahrt stand die Position vor dem zweiten Start bei `65.0`.
+- Beim zweiten `RUN` erfolgte `Wechsel auf SLOW` bereits bei `pos=41.0`.
+- Die langsame Endphase begann damit deutlich frueher als bei einem Vollstart von weiter aussen.
+- Der zweite Lauf endete regulaer am Endschalter bei `pos=0.0`, `endLatch=1`, `reason=1`.
+
+Ergebnis:
+
+- Die neue Restweg-Logik funktioniert im realen Restart-Szenario.
+- Nach einem manuellen Abbruch mitten im Einfahrweg wird der verbleibende Weg korrekt weiterverwendet.
+- Ein Neustart behandelt den Restweg damit nicht mehr wie einen kompletten neuen Vollweg.
+
+## EEPROM- und Neustarttest der gespeicherten Seillaenge
+
+Messlauf:
+
+- Arduino kurz von USB getrennt und wieder verbunden
+- Hauptfirmware startet anschliessend neu
+- Auswertung des Startlogs direkt nach dem Reboot
+
+Beobachtung:
+
+- Im Startlog wurde `Rope avg pulses: 320.9` ausgegeben.
+- Auch die anschliessenden Debug-Zeilen zeigten weiter `ropeAvg=320.9`.
+- Beim Neustart stand die Winde am Endschalter, daher war direkt `pos=0.0`, `endLatch=1`, `reason=1` sichtbar.
+- Obwohl der Trigger bereits auf `RUN` stand, startete die Winde dadurch nicht ungewollt neu.
+
+Ergebnis:
+
+- Die gespeicherte Seillaenge wird nach einem Arduino-Neustart korrekt aus dem EEPROM geladen.
+- Der Neustart an aktiver Endlage fuehrt nicht zu einem unbeabsichtigten Wiederanlauf.
+
 ## Vorlaeufige Arbeitswerte fuer weitere Tests
 
 - Hall-Pulse pro Umdrehung: `2`

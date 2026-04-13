@@ -66,13 +66,15 @@ Die neue Firmware basiert bewusst auf dem V2-Entwurf, nicht auf dem Altcode. Geg
 - Stall-Erkennung bleibt vorbereitet, Strom wird bis zu belastbaren Seiltests aber nur beobachtet
 - ACS712 wird beim Einschalten auf Nullpunkt eingemessen
 - Hall-Impulse werden per Interrupt gezaehlt
-- Lernen wird nur bei plausibler Mindestdauer und Mindestpulszahl uebernommen
+- Lernen wird nur bei plausibler Mindestdauer, Mindestpulszahl und mindestens `70 %` des bisherigen Lernwerts uebernommen
 - langsame Endphase ist aktuell fest auf `1180 us` gesetzt
 
 Fuer den aktuellen Zwischenstand gilt:
 
 - `RUN_FAST` nutzt weiter den RC-Speed-Eingang
 - `RUN_SLOW` nutzt einen festen Wert von `1180 us`
+- die Umschaltung auf `RUN_SLOW` erfolgt aktuell bei etwa `87 %` des gelernten Seilwegs
+- bei Neustart mitten im Einfahrweg wird die langsame Endphase jetzt restwegabhaengig statt nur relativ zum neuen Startpunkt bestimmt
 - Stromwerte werden im Debug-Monitor ausgegeben, loesen aber noch keinen Fehler aus
 - die maximale Laufzeit der Hauptfirmware ist fuer den aktuellen Seilaufbau voruebergehend auf `60000 ms` gesetzt
 

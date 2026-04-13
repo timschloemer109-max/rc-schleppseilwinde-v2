@@ -43,6 +43,9 @@
 - hohe Last bei drehender Trommel ohne Fehlabschaltung
 - Laufzeit-Failsafe
 - kurzer Reset ohne Speichern
+- Neustart mitten im Einfahrweg mit neuer Restweg-Logik praktisch erfolgreich geprueft
+- teilweise Lernfahrt unterhalb der neuen `70 %`-Schwelle erfolgreich verworfen
+- gespeicherte Seillaenge nach Arduino-Neustart gegen EEPROM-Inhalt und Laufverhalten erfolgreich geprueft
 
 ## Naechste Software-Schritte
 

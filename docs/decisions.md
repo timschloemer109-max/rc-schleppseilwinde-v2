@@ -77,6 +77,23 @@ Begruendung:
 - Seillaenge und Wickelbild schwanken
 - ein gleitender Mittelwert ist robuster als hartes Ueberschreiben
 
+Ergaenzung:
+
+- die Lernfahrt wird aktuell nur uebernommen, wenn sie mindestens `70 %` des bisherigen Lernwerts erreicht
+- damit werden halbe oder deutlich unvollstaendige Ausziehfahrten besser von echten Voll-Lernfahrten getrennt
+
+### 10. Endphase nutzt beim Neustart den geschaetzten Restweg
+
+Begruendung:
+
+- ein Neustart mitten im Einfahrweg soll nicht wieder fast die komplette Fast-Phase fahren
+- die langsame Endphase muss sich auch nach einem manuellen Abbruch noch am verbleibenden Weg orientieren
+
+Ergaenzung:
+
+- die Firmware fuehrt dafuer eine geschaetzte Seilposition relativ zum Endschalter mit
+- die Umschaltung auf `RUN_SLOW` erfolgt aktuell bei etwa `87 %` des gelernten Vollwegs beziehungsweise beim Erreichen des entsprechenden Restwegs
+
 ### 9. Werkbank-Test als separater Sketch
 
 Begruendung:
@@ -122,6 +139,7 @@ Vertagt, bis die konkreten Sensor- und Steckverbinder-Typen feststehen.
 - `pulseIn()` ist weiterhin nicht ideal und spaeter ein Kandidat fuer Ersatz.
 - Die ACS712-Grenzwerte muessen am realen Aufbau eingemessen werden.
 - Die pulsgesteuerte Endphase ist jetzt mit einem ersten echten Lernwert von `321` Pulsen verifiziert, muss aber draussen noch gegen einen kompletten Abwickeltest abgesichert werden.
+- Die neue Restweg-Logik fuer Neustarts mitten im Einfahrweg ist implementiert, aber noch praktisch mit echten Abbruch- und Wiederanlauf-Szenarien zu bestaetigen.
 - Die Default-Verdrahtung nimmt einen active-low Endschalter an; eine fail-safe-NC-Variante sollte spaeter geprueft werden.
 - Die Hall-Pulszahl pro Umdrehung ist fuer den aktuellen Aufbau mit `2` Pulsen pro Trommelumdrehung bestaetigt.
 - Fuer oeffentliche Nachnutzung fehlt noch eine explizite Lizenzentscheidung.
