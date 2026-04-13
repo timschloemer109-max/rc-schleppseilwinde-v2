@@ -144,6 +144,103 @@ Ergebnis:
 - Der erste echte Seil-Aufrolltest mit angeschlossenem Endschalter war erfolgreich.
 - Die Endschalterlogik funktioniert auch im realen Bewegungsablauf.
 
+## Erste Lernfahrt mit voller Abrollstrecke
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- Trigger auf `RESET/LEARN`
+- Seil vollstaendig von Hand ausgezogen
+- Lernfahrt durch Rueckkehr des Triggers in die Mitte abgeschlossen
+
+Beobachtung:
+
+- Die Hall-Pulse wurden ueber die gesamte Ausziehstrecke sauber gezaehlt.
+- Nach Abschluss stand `ropeAvg` stabil auf `321.0`.
+- Die Steuerung war anschliessend wieder in `rcMode=0`, `state=0`, ohne Endschalter- oder Fault-Latch.
+
+Ergebnis:
+
+- Der erste echte Lernwert fuer die Seillaenge wurde erfolgreich gespeichert.
+- Fuer den aktuellen Aufbau gilt damit ein gelernter Referenzwert von `321` Hall-Pulsen.
+
+## Erster Einfahrtest mit aktivem Lernwert
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- gespeicherter Lernwert `ropeAvg = 321`
+- Speed-Kanal waehrend des Laufs etwa `1380 us` bis `1400 us`
+- Beobachtung bis zum Erreichen der ersten Endbedingung
+
+Beobachtung:
+
+- `RUN` startete bei `pulses=321`.
+- Der Wechsel `RUN_FAST -> RUN_SLOW` erfolgte bei `pulses=579`.
+- Das entspricht `258` Pulsen seit Start.
+- Die Umschaltung passt damit praktisch exakt zum Sollwert `321 * 0.80 = 256.8`.
+- Der Lauf endete regulaer am Endschalter bei `pulses=639`.
+- Das entspricht `318` Pulsen seit Start und liegt damit nur knapp unter dem gelernten Wert.
+
+Ergebnis:
+
+- Die pulsgesteuerte Umschaltung auf die langsame Endphase funktioniert mit echtem Lernwert wie vorgesehen.
+- Der reale Einfahrweg passt sehr gut zum gelernten Ausziehwert.
+- Der Endschalter beendet den Einfahrvorgang weiterhin sauber als harte Stop-Bedingung.
+
+## Einfahrtest mit Rueckkehr des Triggers in die Mitte
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- gespeicherter Lernwert `ropeAvg = 320.4`
+- Start bei `pulses=960`
+- Beobachtung bis zum Erreichen der ersten Endbedingung
+
+Beobachtung:
+
+- `RUN` startete bei `pulses=960`.
+- Der Trigger wurde waehrend des Laufs in die Mitte zurueckgenommen.
+- Trotz `rcMode=0` lief die Winde weiter, zunaechst in `state=1` und spaeter nach Umschaltung in `state=2`.
+- Der Wechsel `RUN_FAST -> RUN_SLOW` erfolgte bei `pulses=1216`.
+- Das entspricht `256` Pulsen seit Start und passt damit exakt zu `320.4 * 0.80`.
+- Der Lauf endete regulaer am Endschalter bei `pulses=1293`.
+- Das entspricht `333` Pulsen seit Start.
+
+Ergebnis:
+
+- Die Winde laeuft nach Rueckkehr des Triggers in die Mittelstellung autonom weiter.
+- Die pulsgesteuerte Umschaltung auf `RUN_SLOW` funktioniert weiterhin mit dem geglaetteten Lernwert.
+- Auch in diesem Ablauf bleibt der Endschalter die erste harte Endbedingung.
+
+## Beobachtungsregel fuer Fahrtests
+
+- Bei Live-Beobachtungen werden Fahrten im Debug-Log bis zur ersten Endbedingung verfolgt.
+- Als Endbedingungen gelten dabei insbesondere Endschalter-Stopp, Fault-Latch oder sonstige Stop-Gruende.
+- Dadurch lassen sich Umschaltpunkt, Laufverhalten und reale Beendigungsursache je Durchgang klar vergleichen.
+- Beim Abwickeln wird standardmaessig so lange beobachtet, bis der Trigger wieder in der Mittelstellung steht, sofern vor dem Test nichts anderes vereinbart wurde.
+
+## RC-Signalverlust waehrend des Einfahrens
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- gespeicherter Lernwert `ropeAvg = 320.9`
+- Start bei `pulses=1616`
+- RC-Signalverlust absichtlich waehrend `RUN_FAST` provoziert
+
+Beobachtung:
+
+- `RUN` startete regulaer und die Winde lief zunaechst normal an.
+- Der Pulszaehler stieg dabei von `1616` auf `1668`.
+- Nach dem ungültigen RC-Zustand meldete die Firmware `Stop: RC-Signal ungueltig`.
+- Der Stopp erfolgte noch vor der Umschaltung auf `RUN_SLOW`.
+
+Ergebnis:
+
+- Die Hauptfirmware reagiert waehrend des Laufs korrekt auf RC-Signalverlust.
+- Der Antrieb wird in diesem Fall sicher gestoppt und nicht weiter autonom fortgesetzt.
+
 ## Vorlaeufige Arbeitswerte fuer weitere Tests
 
 - Hall-Pulse pro Umdrehung: `2`
@@ -158,3 +255,4 @@ Ergebnis:
 - Vergleich zwischen hoher Last mit drehender Trommel und echtem Stall weiter absichern
 - spaeter Schwellwerte fuer `MAX_CURRENT_A` und Stall sauber aus mehreren Messungen ableiten
 - weitere Aufrolltests mit sauber ausgelegtem Seil dokumentieren
+- Abwickeltest im Freifeld mit Laengenvergleich gegen den Lernwert dokumentieren

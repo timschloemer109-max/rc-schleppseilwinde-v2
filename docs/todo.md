@@ -11,6 +11,7 @@
 - reale ACS712-Nullpunkt- und Lastwerte weiter messen und in `docs/calibration.md` nachfuehren
 - langsame PWM fuer sicheren Endanlauf einmessen
 - Stromgrenze fuer normalen Zug und fuer echten Stall erst nach Seiltests final festlegen
+- erster echter Lernwert aufgezeichnet: `321` Hall-Pulse
 - Lizenz fuer oeffentliche GitHub-Nutzung festlegen
 
 ## Hardware-Tests
@@ -32,21 +33,24 @@
 - Endschalter-Latch und Ruecksetzung ueber `RESET/LEARN` dokumentiert
 - Hauptfirmware: Laufzeit-Failsafe voruebergehend auf `60000 ms` fuer langsames Aufwickeln gesetzt
 - erstes langsames Aufwickeln mit echtem Seil und aktivem Endschalter dokumentiert
+- Lernen mit voller Abrollstrecke erfolgreich dokumentiert
+- pulsgesteuerte Umschaltung FAST -> SLOW mit Lernwert erfolgreich dokumentiert
+- Weiterlaufen nach Rueckkehr des Schalters in die Mitte erfolgreich dokumentiert
+- Signalverlust eines RC-Kanals waehrend des Laufs erfolgreich dokumentiert
 - Start bei `RUN`
-- Weiterlaufen nach Rueckkehr des Schalters in die Mitte
 - sauberer Stopp am Endschalter
 - Stall-Test mit absichtlicher Blockade
 - hohe Last bei drehender Trommel ohne Fehlabschaltung
-- Signalverlust eines RC-Kanals
 - Laufzeit-Failsafe
-- Lernen mit voller Abrollstrecke
 - kurzer Reset ohne Speichern
 
 ## Naechste Software-Schritte
 
 - optional RC-Eingaenge spaeter auf Interrupt oder Pin-Change umstellen
 - Testbench-Messdaten spaeter fuer Anlauf-PWM und Stromgrenzen auswerten
-- `docs/calibration.md` nach Lasttest und Endschaltertest weiterpflegen
+- `docs/calibration.md` nach weiteren Seil- und Lasttests weiterpflegen
 - EEPROM-Struktur spaeter versionieren, falls weitere Parameter gespeichert werden
 - pruefen, ob Endschalter auf fail-safe-NC umgestellt werden soll
 - bei Brushless-Aufbau eventuell feinere Rampen oder Softstart ergaenzen
+- Abwickeltest im Freifeld mit Laengenvergleich gegen den Lernwert dokumentieren
+- Beobachtungsregel fuer Fahrtests bei Bedarf spaeter ins README uebernehmen

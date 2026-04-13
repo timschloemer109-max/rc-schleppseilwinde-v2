@@ -121,7 +121,7 @@ Vertagt, bis die konkreten Sensor- und Steckverbinder-Typen feststehen.
 
 - `pulseIn()` ist weiterhin nicht ideal und spaeter ein Kandidat fuer Ersatz.
 - Die ACS712-Grenzwerte muessen am realen Aufbau eingemessen werden.
-- Ohne gelernte Seillaenge gibt es noch keine vernuenftige pulsgesteuerte Endphase.
+- Die pulsgesteuerte Endphase ist jetzt mit einem ersten echten Lernwert von `321` Pulsen verifiziert, muss aber draussen noch gegen einen kompletten Abwickeltest abgesichert werden.
 - Die Default-Verdrahtung nimmt einen active-low Endschalter an; eine fail-safe-NC-Variante sollte spaeter geprueft werden.
-- Hall-Pulszahl pro Umdrehung ist noch nicht fest gemessen und muss dokumentiert werden.
+- Die Hall-Pulszahl pro Umdrehung ist fuer den aktuellen Aufbau mit `2` Pulsen pro Trommelumdrehung bestaetigt.
 - Fuer oeffentliche Nachnutzung fehlt noch eine explizite Lizenzentscheidung.
