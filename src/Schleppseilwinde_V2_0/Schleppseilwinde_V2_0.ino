@@ -39,7 +39,7 @@ namespace RcPwm {
   constexpr int PWM_MAX = 2000;
   constexpr int PWM_TRIGGER_RUN = 1800;
   constexpr int PWM_TRIGGER_RESET = 1200;
-  constexpr int PWM_SLOW_FIXED = 1180;
+  constexpr int PWM_SLOW_FIXED = 1280;
   constexpr int PWM_SPEED_FALLBACK = 1500;
 }
 
@@ -47,6 +47,7 @@ namespace Config {
   constexpr bool SERIAL_DEBUG = true;
   constexpr unsigned long DEBUG_INTERVAL_MS = 250UL;
   constexpr uint8_t HALL_PULSES_PER_REV = 2;
+  constexpr unsigned long ESC_ARM_HOLD_MS = 3000UL;
 
   constexpr bool END_SWITCH_ACTIVE_LOW = true;
   constexpr unsigned long MAX_RUN_TIME_MS = 60000UL;
@@ -62,6 +63,7 @@ namespace Config {
   constexpr float SLOW_PHASE_FRACTION = 0.87f;
 
   constexpr unsigned long RC_PULSE_TIMEOUT_US = 25000UL;
+  constexpr uint8_t RC_MODE_STABLE_SAMPLES = 3;
   constexpr unsigned long HALL_DEBOUNCE_US = 1000UL;
 
   constexpr uint8_t CURRENT_ZERO_SAMPLES = 64;
@@ -93,6 +95,12 @@ enum class RcMode : uint8_t {
   RUN
 };
 
+enum class EscArmState : uint8_t {
+  ESC_HOLD,
+  WAIT_NEUTRAL,
+  READY
+};
+
 enum class StopReason : uint8_t {
   NONE,
   END_SWITCH,
@@ -119,12 +127,17 @@ volatile unsigned long g_lastHallEdgeMicros = 0;
 
 RunState g_runState = RunState::IDLE;
 RcMode g_lastRcMode = RcMode::STANDBY;
+RcMode g_stableRcMode = RcMode::STANDBY;
+RcMode g_rcModeCandidate = RcMode::STANDBY;
 StopReason g_stopReason = StopReason::NONE;
+EscArmState g_escArmState = EscArmState::ESC_HOLD;
 
 bool g_endSwitchLatched = false;
 bool g_faultLatched = false;
 bool g_learningActive = false;
 
+uint8_t g_rcModeCandidateCount = 0;
+unsigned long g_escArmStartMillis = 0;
 unsigned long g_runStartMillis = 0;
 unsigned long g_pulsesAtRunStart = 0;
 unsigned long g_learnStartPulses = 0;
@@ -232,6 +245,34 @@ RcMode decodeRcMode(const PwmSample &triggerSample) {
   }
 
   return RcMode::STANDBY;
+}
+
+RcMode updateStableRcMode(const PwmSample &triggerSample) {
+  if (!triggerSample.valid) {
+    g_rcModeCandidateCount = 0;
+    return g_stableRcMode;
+  }
+
+  const RcMode rawMode = decodeRcMode(triggerSample);
+  if (rawMode != g_rcModeCandidate) {
+    g_rcModeCandidate = rawMode;
+    g_rcModeCandidateCount = 1;
+  } else if (g_rcModeCandidateCount < 255U) {
+    g_rcModeCandidateCount++;
+  }
+
+  if (g_rcModeCandidateCount >= Config::RC_MODE_STABLE_SAMPLES) {
+    g_stableRcMode = g_rcModeCandidate;
+  }
+
+  return g_stableRcMode;
+}
+
+bool isStableStandbyReady(const PwmSample &triggerSample) {
+  return triggerSample.valid &&
+         g_stableRcMode == RcMode::STANDBY &&
+         g_rcModeCandidate == RcMode::STANDBY &&
+         g_rcModeCandidateCount >= Config::RC_MODE_STABLE_SAMPLES;
 }
 
 float sampleCurrentA() {
@@ -372,11 +413,29 @@ void startRun() {
   debugPrint(F("RUN gestartet"));
 }
 
-void handleRcSignalFault(bool speedValid, bool triggerValid, RcMode rcMode) {
-  const bool running = (g_runState == RunState::RUN_FAST || g_runState == RunState::RUN_SLOW);
-  const bool startRequested = (g_runState == RunState::IDLE && rcMode == RcMode::RUN);
+void updateEscArmState(const PwmSample &triggerSample) {
+  if (g_escArmState == EscArmState::ESC_HOLD) {
+    if ((millis() - g_escArmStartMillis) >= Config::ESC_ARM_HOLD_MS) {
+      g_escArmState = EscArmState::WAIT_NEUTRAL;
+      debugPrint(F("ESC bereit, warte auf Trigger-Mitte"));
+    }
+    return;
+  }
 
-  if ((running || startRequested) && (!speedValid || !triggerValid)) {
+  if (g_escArmState == EscArmState::WAIT_NEUTRAL &&
+      isStableStandbyReady(triggerSample)) {
+    g_escArmState = EscArmState::READY;
+    debugPrint(F("Trigger-Mitte erkannt, RUN freigegeben"));
+  }
+}
+
+void handleRcSignalFault(bool speedValid, bool triggerValid) {
+  if (g_escArmState != EscArmState::READY) {
+    return;
+  }
+
+  const bool running = (g_runState == RunState::RUN_FAST || g_runState == RunState::RUN_SLOW);
+  if (running && (!speedValid || !triggerValid)) {
     stopWithReason(StopReason::RC_SIGNAL_LOSS, true);
     debugPrint(F("Stop: RC-Signal ungueltig"));
   }
@@ -452,7 +511,7 @@ int computeEscOutputUs() {
 
 void printDebug(const PwmSample &speedSample,
                 const PwmSample &triggerSample,
-                RcMode rcMode,
+                RcMode rawRcMode,
                 float currentA) {
   if (!Config::SERIAL_DEBUG) {
     return;
@@ -465,8 +524,12 @@ void printDebug(const PwmSample &speedSample,
   g_lastDebugMillis = millis();
   const PulseSnapshot pulses = snapshotPulses();
 
-  Serial.print(F("rcMode="));
-  Serial.print(static_cast<int>(rcMode));
+  Serial.print(F("rawMode="));
+  Serial.print(static_cast<int>(rawRcMode));
+  Serial.print(F(" rcMode="));
+  Serial.print(static_cast<int>(g_stableRcMode));
+  Serial.print(F(" arm="));
+  Serial.print(static_cast<int>(g_escArmState));
   Serial.print(F(" state="));
   Serial.print(static_cast<int>(g_runState));
   Serial.print(F(" speed="));
@@ -504,8 +567,10 @@ void setup() {
   pinMode(Pins::END_SWITCH, INPUT_PULLUP);
   pinMode(Pins::LED_STATUS, OUTPUT);
 
+  g_esc.writeMicroseconds(RcPwm::PWM_MIN);
   g_esc.attach(Pins::ESC_SIGNAL, RcPwm::PWM_MIN, RcPwm::PWM_MAX);
   g_esc.writeMicroseconds(RcPwm::PWM_MIN);
+  g_escArmStartMillis = millis();
 
   if (Config::SERIAL_DEBUG) {
     Serial.begin(115200);
@@ -538,19 +603,21 @@ void setup() {
 void loop() {
   const PwmSample speedSample = readPwmSample(Pins::RC_SPEED, g_lastValidSpeedPwmUs);
   const PwmSample triggerSample = readPwmSample(Pins::RC_TRIGGER, RcPwm::PWM_MIN);
-  const RcMode rcMode = decodeRcMode(triggerSample);
+  const RcMode rawRcMode = decodeRcMode(triggerSample);
+  const RcMode rcMode = updateStableRcMode(triggerSample);
 
   if (speedSample.valid) {
     g_lastValidSpeedPwmUs = speedSample.valueUs;
   }
 
   const float currentA = sampleCurrentA();
+  updateEscArmState(triggerSample);
 
-  if (rcMode == RcMode::RESET_LEARN) {
+  if (g_escArmState == EscArmState::READY && rcMode == RcMode::RESET_LEARN) {
     if (g_lastRcMode != RcMode::RESET_LEARN) {
       beginLearning();
     }
-  } else if (g_lastRcMode == RcMode::RESET_LEARN) {
+  } else if (g_escArmState == EscArmState::READY && g_lastRcMode == RcMode::RESET_LEARN) {
     finishLearning();
   }
 
@@ -558,9 +625,11 @@ void loop() {
     stopWithReason(StopReason::END_SWITCH, false);
   }
 
-  handleRcSignalFault(speedSample.valid, triggerSample.valid, rcMode);
+  handleRcSignalFault(speedSample.valid, triggerSample.valid);
 
-  if (rcMode == RcMode::RUN &&
+  if (g_escArmState == EscArmState::READY &&
+      rcMode == RcMode::RUN &&
+      g_lastRcMode != RcMode::RUN &&
       g_runState == RunState::IDLE &&
       !g_faultLatched &&
       !g_endSwitchLatched &&
@@ -577,6 +646,6 @@ void loop() {
 
   digitalWrite(Pins::LED_STATUS, (g_faultLatched || g_endSwitchLatched) ? HIGH : LOW);
 
-  printDebug(speedSample, triggerSample, rcMode, currentA);
+  printDebug(speedSample, triggerSample, rawRcMode, currentA);
   g_lastRcMode = rcMode;
 }

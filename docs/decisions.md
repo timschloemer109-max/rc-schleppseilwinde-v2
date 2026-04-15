@@ -108,6 +108,22 @@ Ergaenzung:
 - Bedienung erfolgt seriell mit CSV-Ausgabe fuer Codex oder den Serial Monitor
 - der Testbench-Sketch ist nur fuer beaufsichtigte Werkbanktests gedacht
 
+### 11. ESC-Start nur mit Minimalsignal und Neutral-Freigabe
+
+Begruendung:
+
+- die Arduino-Servo-Library startet beim `attach()` standardmaessig mit `1500 us`
+- dieser Initialpuls kann bei Brushless-Reglern zu uneinheitlichem Schaerfen oder sogar zum Programmiermodus fuehren
+- beim Einschalten darf ein bereits aktiver `RUN`- oder `RESET/LEARN`-Schalter keinen Lauf ausloesen
+
+Ergaenzung:
+
+- die Firmware schreibt dem ESC-Objekt vor `attach()` bereits `1000 us`
+- nach dem Einschalten bleibt die Winde fuer eine feste Arming-Zeit auf `1000 us`
+- erst nach stabil erkannter Mittelstellung des Triggers wird `RUN` freigegeben
+- gestartet wird danach nur auf einer echten Flanke `STANDBY -> RUN`
+- `RESET/LEARN` wird ebenfalls erst nach dieser Neutral-Freigabe ausgewertet
+
 ## Bewusst verworfene oder vertagte Loesungen
 
 ### Rein zeitbasierte Schnell-/Langsamumschaltung
@@ -142,4 +158,5 @@ Vertagt, bis die konkreten Sensor- und Steckverbinder-Typen feststehen.
 - Die neue Restweg-Logik fuer Neustarts mitten im Einfahrweg ist implementiert, aber noch praktisch mit echten Abbruch- und Wiederanlauf-Szenarien zu bestaetigen.
 - Die Default-Verdrahtung nimmt einen active-low Endschalter an; eine fail-safe-NC-Variante sollte spaeter geprueft werden.
 - Die Hall-Pulszahl pro Umdrehung ist fuer den aktuellen Aufbau mit `2` Pulsen pro Trommelumdrehung bestaetigt.
+- Die RC-Eingaenge werden weiterhin mit `pulseIn()` gelesen; die neue Neutral-Freigabe macht das Einschalten robuster, ersetzt aber keine spaetere interruptbasierte Messung.
 - Fuer oeffentliche Nachnutzung fehlt noch eine explizite Lizenzentscheidung.

@@ -37,7 +37,11 @@
 - pulsgesteuerte Umschaltung FAST -> SLOW mit Lernwert erfolgreich dokumentiert
 - Weiterlaufen nach Rueckkehr des Schalters in die Mitte erfolgreich dokumentiert
 - Signalverlust eines RC-Kanals waehrend des Laufs erfolgreich dokumentiert
-- Start bei `RUN`
+- Einschalten mit Trigger in Mitte und normalem ESC-Schaerfen pruefen
+- Einschalten mit Trigger auf `RUN`: keine Bewegung bis Mitte und neuer `RUN`
+- Einschalten mit Trigger auf `RESET/LEARN`: keine Lernfahrt bis Mitte
+- Arduino vor ESC, ESC vor Arduino und nahezu gleichzeitig pruefen
+- kein langsames Phantom-Einziehen nach manuellem Seil-Ausziehen und Loslassen
 - sauberer Stopp am Endschalter
 - Stall-Test mit absichtlicher Blockade
 - hohe Last bei drehender Trommel ohne Fehlabschaltung
@@ -57,3 +61,6 @@
 - bei Brushless-Aufbau eventuell feinere Rampen oder Softstart ergaenzen
 - Abwickeltest im Freifeld mit Laengenvergleich gegen den Lernwert dokumentieren
 - Beobachtungsregel fuer Fahrtests bei Bedarf spaeter ins README uebernehmen
+- Bootsignal an `D4` bei Bedarf mit Oszi oder Logikanalysator messen
+- optionalen Serienwiderstand oder Pulldown am ESC-Signal nur bei echtem Restproblem pruefen
+- 5-V-Verhalten beim manuellen Rueckdrehen oder Ausziehen weiter beobachten

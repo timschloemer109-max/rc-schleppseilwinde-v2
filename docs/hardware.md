@@ -82,6 +82,8 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 
 - Direktverbindung Nano `D4` auf ESC-Signal ist fuer den ersten kurzen Aufbau ok.
 - Ein kleiner Serienwiderstand ist optional, aber nicht zwingend vorgesehen.
+- Die Hauptfirmware sendet auch im Stillstand aktiv `1000 us` und trennt das ESC-Signal nicht ab.
+- Beim Einschalten haelt die Hauptfirmware den ESC zuerst einige Sekunden auf `1000 us` und gibt `RUN` erst nach stabiler Trigger-Mittelstellung frei.
 
 ### Hall-Sensor
 
@@ -159,10 +161,11 @@ Ein erster sauberer Schaltplan fuer den Aufbau liegt als SVG hier:
 
 1. 5 V am Nano und Empfaenger messen.
 2. GND-Verbindungen durchklingeln.
-3. Endschalter-Eingang im Monitor pruefen.
-4. Hall-Pulse von Hand an der Trommel pruefen.
-5. ACS712-Rohwert im Stillstand beobachten.
-6. ESC erst ohne Seil und mit kleiner PWM testen.
+3. Trigger zum Einschalten in Mittelstellung lassen und die normalen ESC-Beeptoene abwarten.
+4. Endschalter-Eingang im Monitor pruefen.
+5. Hall-Pulse von Hand an der Trommel pruefen.
+6. ACS712-Rohwert im Stillstand beobachten.
+7. ESC erst ohne Seil und mit kleiner PWM testen.
 
 ## Testbench-Kommandos
 

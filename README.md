@@ -67,14 +67,18 @@ Die neue Firmware basiert bewusst auf dem V2-Entwurf, nicht auf dem Altcode. Geg
 - ACS712 wird beim Einschalten auf Nullpunkt eingemessen
 - Hall-Impulse werden per Interrupt gezaehlt
 - Lernen wird nur bei plausibler Mindestdauer, Mindestpulszahl und mindestens `70 %` des bisherigen Lernwerts uebernommen
-- langsame Endphase ist aktuell fest auf `1180 us` gesetzt
+- langsame Endphase ist aktuell fest auf `1280 us` gesetzt
+- der ESC bekommt schon beim Start konsequent `1000 us`, damit kein `1500 us`-Startpuls aus der Servo-Library in den Regler laeuft
+- nach dem Einschalten wird `RUN` erst freigegeben, wenn der Trigger stabil in Mittelstellung erkannt wurde
 
 Fuer den aktuellen Zwischenstand gilt:
 
 - `RUN_FAST` nutzt weiter den RC-Speed-Eingang
-- `RUN_SLOW` nutzt einen festen Wert von `1180 us`
+- `RUN_SLOW` nutzt einen festen Wert von `1280 us`
 - die Umschaltung auf `RUN_SLOW` erfolgt aktuell bei etwa `87 %` des gelernten Seilwegs
 - bei Neustart mitten im Einfahrweg wird die langsame Endphase jetzt restwegabhaengig statt nur relativ zum neuen Startpunkt bestimmt
+- die Hauptfirmware haelt nach dem Einschalten zuerst eine feste ESC-Arming-Zeit bei `1000 us` und ignoriert in dieser Phase `RUN` und `RESET/LEARN`
+- gestartet wird erst nach einer echten Flanke `STANDBY -> RUN`; ein bereits beim Einschalten aktiver `RUN`- oder `RESET/LEARN`-Schalter loest nichts aus
 - Stromwerte werden im Debug-Monitor ausgegeben, loesen aber noch keinen Fehler aus
 - die maximale Laufzeit der Hauptfirmware ist fuer den aktuellen Seilaufbau voruebergehend auf `60000 ms` gesetzt
 
@@ -106,11 +110,12 @@ Unterstuetzte Befehle:
 ## Erste Inbetriebnahme
 
 1. Verdrahtung nach `docs/hardware.md` aufbauen.
-2. Endschalterfunktion ohne Motor pruefen.
-3. Hall-Sensor und Impulszaehlung im Seriellen Monitor pruefen.
-4. ACS712-Nullpunkt im Stillstand kontrollieren.
-5. ESC zuerst ohne Seil und mit kleiner PWM testen.
-6. Erst danach Lernfahrt fuer die Seillaenge machen.
+2. Trigger fuer den ersten Einschaltversuch in Mittelstellung lassen.
+3. Endschalterfunktion ohne Motor pruefen.
+4. Hall-Sensor und Impulszaehlung im Seriellen Monitor pruefen.
+5. ACS712-Nullpunkt im Stillstand kontrollieren.
+6. ESC zuerst ohne Seil und mit kleiner PWM testen.
+7. Erst danach Lernfahrt fuer die Seillaenge machen.
 
 ## Erste Inbetriebnahme der Testbench
 

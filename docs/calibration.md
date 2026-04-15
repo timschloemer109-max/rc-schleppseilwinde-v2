@@ -309,7 +309,8 @@ Ergebnis:
 
 - Hall-Pulse pro Umdrehung: `2`
 - vorsichtige Anlaufschwelle: `1120 us`
-- brauchsame langsame Testfahrt: `1160 us` bis `1180 us`
+- bisher brauchsame langsame Testfahrt auf dem Werkbankstand: `1160 us` bis `1180 us`
+- aktueller Hauptfirmware-Wert fuer mehr Drehmoment in `RUN_SLOW`: `1280 us`
 - zuegigere, aber noch kontrollierte Testfahrt: `1200 us` bis `1240 us`
 
 ## Offene Punkte fuer die naechsten Lasttests
