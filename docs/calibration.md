@@ -305,6 +305,33 @@ Ergebnis:
 - Die gespeicherte Seillaenge wird nach einem Arduino-Neustart korrekt aus dem EEPROM geladen.
 - Der Neustart an aktiver Endlage fuehrt nicht zu einem unbeabsichtigten Wiederanlauf.
 
+## Rasentest auf Rasen mit neuem Lernwert
+
+Messlauf:
+
+- Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
+- zunaechst `RESET/LEARN` auf Rasen mit vollstaendigem manuellem Ausziehen
+- uebernommener Ausziehwert `337` Pulse
+- geglaetteter Lernwert danach `ropeAvg = 347.1`
+- anschliessend `RUN` bis zur ersten Endbedingung beobachtet
+
+Beobachtung:
+
+- Die Lernfahrt wurde mit `Lernwert uebernommen: 337 Pulse, Mittelwert: 347.1` sauber abgeschlossen.
+- Vor dem Einziehen lag die geschaetzte Startposition bei etwa `pos=337.0`.
+- Der erste Fahr-Logeintrag in `RUN_FAST` lag bei `pulses=338`, `pos=336.0`.
+- Der hoechste beobachtete Strombetrag lag bei etwa `5.03 A` in `RUN_FAST` bei `pulses=512`, `pos=162.0`.
+- Der Wechsel `RUN_FAST -> RUN_SLOW` erfolgte bei `pulses=630`, `pos=44.0`.
+- Das entspricht noch rund `12.7 %` Restweg relativ zum geglaetteten Lernwert `347.1`.
+- Der Lauf endete regulaer am Endschalter bei `pulses=673`, `pos=0.0`, `endLatch=1`, `reason=1`.
+- Ein `faultLatch` trat im gesamten Rasentest nicht auf.
+
+Ergebnis:
+
+- Das manuelle Ausziehen auf Rasen wurde sauber als neue Lernfahrt uebernommen.
+- Der anschliessende Einziehvorgang lief mit dem neuen Lernwert stabil bis zum Endschalter durch.
+- Auch mit kurzzeitig bis etwa `5 A` beobachtetem Motorstrom blieb die Winde in diesem Test frei von Fehlabschaltung.
+
 ## Vorlaeufige Arbeitswerte fuer weitere Tests
 
 - Hall-Pulse pro Umdrehung: `2`
@@ -320,4 +347,4 @@ Ergebnis:
 - Vergleich zwischen hoher Last mit drehender Trommel und echtem Stall weiter absichern
 - spaeter Schwellwerte fuer `MAX_CURRENT_A` und Stall sauber aus mehreren Messungen ableiten
 - weitere Aufrolltests mit sauber ausgelegtem Seil dokumentieren
-- Abwickeltest im Freifeld mit Laengenvergleich gegen den Lernwert dokumentieren
+- weitere Abwickeltests im Freifeld mit Laengenvergleich gegen den Lernwert dokumentieren

@@ -12,6 +12,7 @@
 - langsame PWM fuer sicheren Endanlauf einmessen
 - Stromgrenze fuer normalen Zug und fuer echten Stall erst nach Seiltests final festlegen
 - erster echter Lernwert aufgezeichnet: `321` Hall-Pulse
+- Rasen-Lernfahrt dokumentiert: `337` Hall-Pulse, geglaetteter Lernwert danach `347.1`
 - Lizenz fuer oeffentliche GitHub-Nutzung festlegen
 
 ## Hardware-Tests
@@ -50,6 +51,7 @@
 - Neustart mitten im Einfahrweg mit neuer Restweg-Logik praktisch erfolgreich geprueft
 - teilweise Lernfahrt unterhalb der neuen `70 %`-Schwelle erfolgreich verworfen
 - gespeicherte Seillaenge nach Arduino-Neustart gegen EEPROM-Inhalt und Laufverhalten erfolgreich geprueft
+- Rasentest auf Rasen mit regulaerem Endschalter-Stopp und Peakstrom von etwa `5.03 A` dokumentiert
 
 ## Naechste Software-Schritte
 
@@ -59,7 +61,7 @@
 - EEPROM-Struktur spaeter versionieren, falls weitere Parameter gespeichert werden
 - pruefen, ob Endschalter auf fail-safe-NC umgestellt werden soll
 - bei Brushless-Aufbau eventuell feinere Rampen oder Softstart ergaenzen
-- Abwickeltest im Freifeld mit Laengenvergleich gegen den Lernwert dokumentieren
+- weitere Abwickeltests im Freifeld mit Laengenvergleich gegen den Lernwert dokumentieren
 - Beobachtungsregel fuer Fahrtests bei Bedarf spaeter ins README uebernehmen
 - Bootsignal an `D4` bei Bedarf mit Oszi oder Logikanalysator messen
 - optionalen Serienwiderstand oder Pulldown am ESC-Signal nur bei echtem Restproblem pruefen
