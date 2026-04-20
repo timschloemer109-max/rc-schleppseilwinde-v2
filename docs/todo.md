@@ -17,10 +17,19 @@
 
 ## Hardware-Tests
 
+- EMV- und RC-Stoerthema aktiv weiterverfolgen: siehe `docs/emv_rc_stoerungen.md`
+- ESP32-Sniffer fuer `D4 -> ESC` aufbauen und Vergleichsmessungen `Motor aus / Motor an / Motor an mit Gas` aufzeichnen
+- ESP32-Nachweis fuer `D4 -> ESC` dokumentiert: `Motor aus` sauber, `Motor an` mit `OUT_OF_RANGE` und `TIMEOUT`
+- Killswitch der Zuendung als Stoerkandidat gezielt gegen direkten Akkuanschluss der Zuendung vergleichen
+- Vergleich mit direkter Zundungsversorgung dokumentiert: Signal fast sauber, Killswitch-Pfad weiter zerlegen
+- Empfaengerkanal vor dem Arduino dokumentiert: `Motor aus` sauber, `Motor an` mit Killswitch bereits stoerbehaftet
+- Killswitch-Stecker Richtung Empfaenger dokumentiert: direkte Stoerpulse messbar, Kontroll-LED zeigte Fehlverhalten
+- neuen Killswitch beschaffen und den kompletten Vergleichsablauf danach wiederholen
 - Endschalter elektrisch und mechanisch geprueft, erster echter Seilweg-Endtest erfolgreich
 - Werkbank-Testbench ohne Seil mit angeschlossenem Motor pruefen
 - Hall-Signal mit langsamer und hoher Drehzahl pruefen
 - Stoerfestigkeit der 5-V-Schiene unter Motorlast pruefen
+- getrennte Arduino-Versorgung gegen gemeinsame Masse-/Signalstoerung abgrenzen und dokumentieren
 - Temperaturverhalten von ACS712 und ESC pruefen
 - Leitungsfuehrung auf Stoereinkopplung pruefen
 
@@ -38,6 +47,7 @@
 - pulsgesteuerte Umschaltung FAST -> SLOW mit Lernwert erfolgreich dokumentiert
 - Weiterlaufen nach Rueckkehr des Schalters in die Mitte erfolgreich dokumentiert
 - Signalverlust eines RC-Kanals waehrend des Laufs erfolgreich dokumentiert
+- RC-Glitch-Test mit laufendem Verbrenner: kurzer Einzel-Aussetzer darf keinen gelatchten `RC_SIGNAL_LOSS` mehr ausloesen
 - Einschalten mit Trigger in Mitte und normalem ESC-Schaerfen pruefen
 - Einschalten mit Trigger auf `RUN`: keine Bewegung bis Mitte und neuer `RUN`
 - Einschalten mit Trigger auf `RESET/LEARN`: keine Lernfahrt bis Mitte
@@ -55,6 +65,8 @@
 
 ## Naechste Software-Schritte
 
+- Begleitdatei fuer Stoer- und RC-Aussetzer-Thema pflegen: `docs/emv_rc_stoerungen.md`
+- Diagnosepaket `tools/esp32-logger` bei Bedarf auf `RC Trigger` und `RC Speed` erweitern
 - optional RC-Eingaenge spaeter auf Interrupt oder Pin-Change umstellen
 - Testbench-Messdaten spaeter fuer Anlauf-PWM und Stromgrenzen auswerten
 - `docs/calibration.md` nach weiteren Seil- und Lasttests weiterpflegen

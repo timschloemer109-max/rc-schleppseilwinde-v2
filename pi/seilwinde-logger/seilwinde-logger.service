@@ -1,0 +1,16 @@
+[Unit]
+Description=RC Schleppseilwinde Pi Logger
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=seilwinde
+Group=seilwinde
+WorkingDirectory=/opt/seilwinde-logger
+ExecStart=/usr/bin/python3 /opt/seilwinde-logger/logger.py --log-dir /var/log/seilwinde --baud 115200
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

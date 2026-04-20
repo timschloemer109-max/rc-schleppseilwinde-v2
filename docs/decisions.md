@@ -124,6 +124,19 @@ Ergaenzung:
 - gestartet wird danach nur auf einer echten Flanke `STANDBY -> RUN`
 - `RESET/LEARN` wird ebenfalls erst nach dieser Neutral-Freigabe ausgewertet
 
+### 12. RC-Signalverlust waehrend `RUN` wird ueber mehrere Samples entprellt
+
+Begruendung:
+
+- die aktuelle RC-Messung per `pulseIn()` kann unter EMV-Belastung kurze Einzel-Aussetzer liefern
+- ein einmaliger ungueltiger Read darf nicht sofort einen gelatchten Fehlstopp ausloesen
+- die Failsafe-Funktion bleibt erhalten, weil mehrere aufeinanderfolgende ungueltige Reads weiterhin sicher auf `RC_SIGNAL_LOSS` fuehren
+
+Ergaenzung:
+
+- `RC_SIGNAL_LOSS` wird im aktuellen Stand erst nach `3` aufeinanderfolgenden ungueltigen RC-Lesungen waehrend `RUN` gesetzt
+- der Debug-Output zeigt dazu den aktuellen Fehlerburst als `rcLossCnt` und erfolgreich abgefangene Kurzstoerungen als `rcRecov`
+
 ## Bewusst verworfene oder vertagte Loesungen
 
 ### Rein zeitbasierte Schnell-/Langsamumschaltung
@@ -159,4 +172,5 @@ Vertagt, bis die konkreten Sensor- und Steckverbinder-Typen feststehen.
 - Die Default-Verdrahtung nimmt einen active-low Endschalter an; eine fail-safe-NC-Variante sollte spaeter geprueft werden.
 - Die Hall-Pulszahl pro Umdrehung ist fuer den aktuellen Aufbau mit `2` Pulsen pro Trommelumdrehung bestaetigt.
 - Die RC-Eingaenge werden weiterhin mit `pulseIn()` gelesen; die neue Neutral-Freigabe macht das Einschalten robuster, ersetzt aber keine spaetere interruptbasierte Messung.
+- Auch mit der neuen RC-Loss-Entprellung bleiben `pulseIn()` und die Verdrahtung stoeranfaellig; die Massnahme ist eine Robustheitsverbesserung, kein Ersatz fuer saubere EMV-Fuehrung.
 - Fuer oeffentliche Nachnutzung fehlt noch eine explizite Lizenzentscheidung.

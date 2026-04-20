@@ -64,6 +64,7 @@ namespace Config {
 
   constexpr unsigned long RC_PULSE_TIMEOUT_US = 25000UL;
   constexpr uint8_t RC_MODE_STABLE_SAMPLES = 3;
+  constexpr uint8_t RC_SIGNAL_LOSS_SAMPLES = 3;
   constexpr unsigned long HALL_DEBOUNCE_US = 1000UL;
 
   constexpr uint8_t CURRENT_ZERO_SAMPLES = 64;
@@ -137,12 +138,14 @@ bool g_faultLatched = false;
 bool g_learningActive = false;
 
 uint8_t g_rcModeCandidateCount = 0;
+uint8_t g_invalidRcRunSamples = 0;
 unsigned long g_escArmStartMillis = 0;
 unsigned long g_runStartMillis = 0;
 unsigned long g_pulsesAtRunStart = 0;
 unsigned long g_learnStartPulses = 0;
 unsigned long g_learnStartMillis = 0;
 unsigned long g_lastDebugMillis = 0;
+unsigned long g_rcTransientRecoveries = 0;
 
 float g_ropePulsesAvg = 0.0f;
 float g_positionPulses = 0.0f;
@@ -304,6 +307,7 @@ void resetFaults() {
   g_endSwitchLatched = false;
   g_stopReason = StopReason::NONE;
   g_runState = RunState::IDLE;
+  g_invalidRcRunSamples = 0;
 }
 
 void syncRunPositionFromSnapshot(const PulseSnapshot &pulses) {
@@ -410,6 +414,7 @@ void startRun() {
   g_positionAtRunStart = g_positionKnown ? g_positionPulses : g_ropePulsesAvg;
   g_runState = RunState::RUN_FAST;
   g_stopReason = StopReason::NONE;
+  g_invalidRcRunSamples = 0;
   debugPrint(F("RUN gestartet"));
 }
 
@@ -435,7 +440,24 @@ void handleRcSignalFault(bool speedValid, bool triggerValid) {
   }
 
   const bool running = (g_runState == RunState::RUN_FAST || g_runState == RunState::RUN_SLOW);
-  if (running && (!speedValid || !triggerValid)) {
+  if (!running) {
+    g_invalidRcRunSamples = 0;
+    return;
+  }
+
+  if (!speedValid || !triggerValid) {
+    if (g_invalidRcRunSamples < 255U) {
+      g_invalidRcRunSamples++;
+    }
+  } else {
+    if (g_invalidRcRunSamples > 0) {
+      g_rcTransientRecoveries++;
+      g_invalidRcRunSamples = 0;
+    }
+    return;
+  }
+
+  if (g_invalidRcRunSamples >= Config::RC_SIGNAL_LOSS_SAMPLES) {
     stopWithReason(StopReason::RC_SIGNAL_LOSS, true);
     debugPrint(F("Stop: RC-Signal ungueltig"));
   }
@@ -540,6 +562,10 @@ void printDebug(const PwmSample &speedSample,
   Serial.print(triggerSample.valueUs);
   Serial.print(F(" trigOk="));
   Serial.print(triggerSample.valid);
+  Serial.print(F(" rcLossCnt="));
+  Serial.print(g_invalidRcRunSamples);
+  Serial.print(F(" rcRecov="));
+  Serial.print(g_rcTransientRecoveries);
   Serial.print(F(" I="));
   Serial.print(currentA, 2);
   Serial.print(F("A pulses="));

@@ -84,6 +84,7 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 - Ein kleiner Serienwiderstand ist optional, aber nicht zwingend vorgesehen.
 - Die Hauptfirmware sendet auch im Stillstand aktiv `1000 us` und trennt das ESC-Signal nicht ab.
 - Beim Einschalten haelt die Hauptfirmware den ESC zuerst einige Sekunden auf `1000 us` und gibt `RUN` erst nach stabiler Trigger-Mittelstellung frei.
+- Kurze RC-PWM-Aussetzer werden in der Hauptfirmware waehrend `RUN` erst nach `3` aufeinanderfolgenden ungueltigen Reads als `RC_SIGNAL_LOSS` gewertet; saubere Leitungsfuehrung bleibt trotzdem Pflicht.
 
 ### Hall-Sensor
 

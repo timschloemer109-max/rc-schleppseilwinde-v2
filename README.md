@@ -70,6 +70,7 @@ Die neue Firmware basiert bewusst auf dem V2-Entwurf, nicht auf dem Altcode. Geg
 - langsame Endphase ist aktuell fest auf `1280 us` gesetzt
 - der ESC bekommt schon beim Start konsequent `1000 us`, damit kein `1500 us`-Startpuls aus der Servo-Library in den Regler laeuft
 - nach dem Einschalten wird `RUN` erst freigegeben, wenn der Trigger stabil in Mittelstellung erkannt wurde
+- `RC_SIGNAL_LOSS` wird waehrend `RUN` erst nach `3` aufeinanderfolgenden ungueltigen RC-Lesungen gelatcht, damit kurze EMV-Glitches nicht sofort zum Fehlstopp fuehren
 
 Fuer den aktuellen Zwischenstand gilt:
 
@@ -81,6 +82,7 @@ Fuer den aktuellen Zwischenstand gilt:
 - gestartet wird erst nach einer echten Flanke `STANDBY -> RUN`; ein bereits beim Einschalten aktiver `RUN`- oder `RESET/LEARN`-Schalter loest nichts aus
 - Stromwerte werden im Debug-Monitor ausgegeben, loesen aber noch keinen Fehler aus
 - die maximale Laufzeit der Hauptfirmware ist fuer den aktuellen Seilaufbau voruebergehend auf `60000 ms` gesetzt
+- der Debug-Monitor zeigt zusaetzlich `rcLossCnt` fuer den aktuellen RC-Fehlerburst und `rcRecov` fuer erfolgreich abgefangene Kurzstoerungen
 
 ## Werkbank-Testbench
 
@@ -96,6 +98,14 @@ Der Sketch ist bewusst nur fuer beaufsichtigte Werkbanktests gedacht:
 - keine RC-Logik, keine Lernlogik und kein Ersatz fuer den fehlenden Endschalter
 - harte Laufzeitbegrenzung und Stall-Stopp nur aus hohem Strom plus fehlenden Hall-Impulsen
 - gemessene Anlauf- und Drehzahldaten werden in `docs/calibration.md` gesammelt
+
+## Diagnosewerkzeug fuer PWM-Stoersuche
+
+Fuer die aktuelle EMV- und RC-Stoersuche am Verbrenner-Aufbau gibt es zusaetzlich ein separates Diagnosepaket:
+
+- `tools/esp32-logger`
+
+Es schneidet PWM-Signale mit einem ESP32 passiv mit und ist ausdruecklich nicht Teil der Sicherheitskette der Hauptfirmware.
 
 Unterstuetzte Befehle:
 

@@ -21,6 +21,7 @@ Die Steuerung soll eine RC-Seilwinde robust, nachvollziehbar und hardwaretauglic
 - Hall-Sensor bleibt auf einem Interrupt-Pin.
 - Schnell- auf Langsamfahrt wird pulsbasiert abgeleitet, nicht primaer zeitbasiert.
 - Aenderungen sollen fuer kleine Mikrocontroller uebersichtlich bleiben.
+- Ein externer Logger bleibt rein passiv und darf nie Teil der Sicherheitskette werden.
 
 ## Festgelegter V2.0-Stand
 
@@ -36,6 +37,8 @@ Die Steuerung soll eine RC-Seilwinde robust, nachvollziehbar und hardwaretauglic
 
 Der Testbench-Sketch ist nur fuer beaufsichtigte Werkbanktests ohne RC-Empfaenger gedacht und ersetzt die Endschalter-Absicherung nicht.
 Im aktuellen Zwischenstand der Hauptfirmware wird der ACS712-Wert seriell beobachtet, aber die Stromschwelle wird erst nach Lasttests mit Seil als Fehlerkriterium aktiviert.
+Die Hauptfirmware sendet zusaetzlich ein festes CSV-Telemetrieformat fuer den Pi-Logger auf derselben seriellen Schnittstelle.
+Kurze RC-Aussetzer waehrend `RUN` werden erst nach `3` aufeinanderfolgenden ungueltigen RC-Lesungen als `RC_SIGNAL_LOSS` gelatcht, damit kurze EMV-Glitches keinen sofortigen Fehlstopp ausloesen.
 
 ## Dokumentationspflicht
 
@@ -45,9 +48,10 @@ Diese Unterlagen muessen aktiv gepflegt werden:
 - `AGENTS.md`
 - `docs/hardware.md`
 - `docs/decisions.md`
+- `docs/pi_logger.md`
 - `docs/todo.md`
 
-Bei jeder relevanten Aenderung an Hardware, Pinbelegung, Sicherheitslogik, Lernlogik oder Teststand muessen die passenden Dateien mit aktualisiert werden.
+Bei jeder relevanten Aenderung an Hardware, Pinbelegung, Sicherheitslogik, Lernlogik, Telemetrieformat oder Teststand muessen die passenden Dateien mit aktualisiert werden.
 
 ## Was nicht stillschweigend passieren darf
 
@@ -56,6 +60,7 @@ Bei jeder relevanten Aenderung an Hardware, Pinbelegung, Sicherheitslogik, Lernl
 - Lernfunktion so aendern, dass kleine Reset-Bewegungen Werte speichern
 - Pinbelegung ohne Doku-Anpassung aendern
 - neue magische Zahlen quer im Code verteilen
+- den Pi-Logger unbemerkt in die Steuer- oder Sicherheitslogik ziehen
 
 ## Testpflichtige Punkte nach Aenderungen
 
@@ -65,5 +70,8 @@ Bei jeder relevanten Aenderung an Hardware, Pinbelegung, Sicherheitslogik, Lernl
 - Stall-Fall: hoher Strom plus keine Hall-Pulse
 - hohe Last mit noch drehender Trommel
 - Laufzeit-Failsafe
+- kurzer RC-Glitch waehrend `RUN` darf keinen Sofort-Fehlstopp mehr ausloesen
 - Lernfahrt vollstaendig
 - kurzer Reset ohne Ueberschreiben der Seillaenge
+- CSV-Header genau einmal nach Boot
+- `telemetry` im Intervall und `event` bei Zustandswechseln
