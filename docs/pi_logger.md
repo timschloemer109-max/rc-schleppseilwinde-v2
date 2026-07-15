@@ -30,6 +30,15 @@ Diese Datei beschreibt den passiven Logger fuer die Hauptfirmware `src/Schleppse
 - Log-Verzeichnis: `/var/log/seilwinde`
 - Dienst: `seilwinde-logger.service`
 
+## Inbetriebnahmestand 15.07.2026
+
+- Raspberry Pi OS Lite 64-bit mit Debian 13 (`trixie`) ist installiert.
+- Heim-WLAN und mobiler Hotspot sind als NetworkManager-Profile eingerichtet; das Heim-WLAN hat die hoehere Autoconnect-Prioritaet.
+- Der Logger liegt unter `/opt/seilwinde-logger` und `seilwinde-logger.service` startet nach einem Reboot erfolgreich.
+- Der temporaer fuer die Einrichtung verwendete USB-Gadget-Modus ist wieder deaktiviert; der USB-Datenport ist damit fuer den Arduino frei.
+- Ohne angeschlossenen Arduino bleibt der Dienst aktiv und wartet erwartungsgemaess auf `/dev/ttyUSB*` oder `/dev/ttyACM*`.
+- Offen ist der End-to-End-Test mit angeschlossenem Nano und einer echten CSV-Session.
+
 ## Verkabelung
 
 - Arduino Nano per USB-Kabel an den `USB`-Datenport des Pi Zero 2 W anschliessen.
@@ -85,6 +94,14 @@ Im Repo liegt zusaetzlich ein vorbereiteter Windows-Helfer:
 - `tools/prepare_pi_sd.ps1`
 
 Der Helfer ist bewusst parameterisiert und schreibt keine echten WLAN- oder Login-Geheimnisse ins Repo. Er ist fuer die SD-Karte auf dem Windows-Laufwerk `E:` gedacht und erzeugt die noetigen `cloud-init`-Dateien fuer Hostname, Benutzer, WLAN und optionalen SSH-Key.
+
+Optional kann bereits beim Schreiben ein zweites WLAN, beispielsweise ein mobiler Hotspot fuer den Feldeinsatz, mit `-SecondaryWifiSsid` und `-SecondaryWifiPassword` hinterlegt werden. Falls die Karte nach einem Schreibversuch keinen Laufwerksbuchstaben mehr besitzt, kann der zuvor eindeutig gepruefte USB-Datentraeger mit `-DiskNumber` angegeben werden. Der Helfer verweigert Boot-, System- und Nicht-USB-Datentraeger, laedt das aktuelle Lite-Image zuerst lokal herunter und prueft dessen SHA-256-Hash gegen die offizielle Raspberry-Pi-Pruefsumme.
+
+Der vorbereitete Headless-Start aktiviert SSH ueber `enable_ssh: true` in `user-data`. Bei Bedarf kann zusaetzlich die klassische Datei `ssh` auf `bootfs` als redundanter Aktivierungsweg angelegt werden. Nach dem ersten Boot wird der Logger weiterhin wie unten beschrieben per SSH installiert; das Schreiben der SD-Karte allein installiert den Logger-Dienst noch nicht.
+
+Beim verwendeten Trixie-Image meldete Cloud-Init das fehlende optionale Modul `cc_netplan_nm_patch`; die WLAN-Profile aus `network-config` wurden dadurch nicht in NetworkManager angelegt und WLAN blieb softwareseitig blockiert. Fuer diesen Pi wurden das WLAN-Land `DE`, die Funkfreigabe und beide Verbindungsprofile deshalb einmalig ueber den temporaeren USB-Gadget-Zugang gesetzt. Nach Abschalten des Gadget-Modus und einem Reboot kam der Pi selbststaendig ueber WLAN zurueck.
+
+Unter Windows wurde das USB-Gadget zunaechst faelschlich als serielles Geraet gebunden. Der signierte offizielle `Raspberry Pi USB RNDIS Driver` band `VID 2E8A / PID 0013` korrekt als Netzwerkadapter. Der Gadget-Modus ist nur ein Einrichtungs- und Diagnoseweg und darf im Loggerbetrieb nicht aktiv bleiben, weil der USB-Datenport fuer den Arduino benoetigt wird.
 
 ## Remote-Abruf
 

@@ -4,21 +4,29 @@ Diese Datei sammelt das aktuelle Stoerthema rund um laufenden Verbrennungsmotor,
 
 ## Sicherheitsstatus
 
-- Mit den aktuell beobachteten Stoerungen ist der Aufbau nicht flugreif.
-- Solange Geisterdrehungen des Windenmotors bei laufendem Verbrenner auftreten, darf die Winde nicht als betriebssicher betrachtet werden.
-- Kurzzeitige RC-Aussetzer koennen trotz Firmware-Entschaerfung weiterhin auf ein reales EMV-Problem im Aufbau hinweisen.
+- Neuer Stand vom 15.07.2026: Nahe am ESC wurden alle drei Adern der ESC-Leitung gemeinsam mehrfach durch einen Ferritkern gefuehrt; seitdem wurden keine Stoerungen oder Geisterdrehungen mehr beobachtet.
+- Die frueheren Stoernachweise bleiben unten als Diagnosehistorie erhalten.
+- Die Ferritloesung muss vor dem Flugbetrieb noch in wiederholten Motor-, Last- und Reichweitentests bestaetigt werden.
+- Unabhaengig davon bestehen neue mechanische Defekte und eine auffaellige Motorerwaermung; der Gesamtaufbau ist deshalb noch nicht flugreif.
 - Ziel bleibt: reproduzierbares Verhalten im Flug und kein unerwartetes Einziehen oder Anlaufen.
 
 ## Bisherige Beobachtungen
 
 ### 0. Aktueller Stoerverdacht: Killswitch der Zuendung
 
-- Der aktuelle Hauptverdacht liegt auf dem Killswitch der Zuendung als Stoerquelle oder Stoerpfad.
-- Naechster geplanter Vergleichstest:
-- bisheriger Aufbau mit Killswitch im System
-- gegen einen Test, bei dem die Zuendung testweise direkt vom Akku versorgt wird
-- Ziel des Vergleichs:
-- pruefen, ob sich die Stoerereignisse auf `D4 -> ESC` dadurch deutlich verringern oder verschwinden
+- Der urspruengliche Hauptverdacht lag auf dem Killswitch der Zuendung als Stoerquelle oder Stoerpfad.
+- Nach Einbau eines neuen Killswitch treten weiterhin Stoerungen auf.
+- Neuer Stand:
+- Mit einem separaten Akku direkt an der Zuendung war `D4 -> ESC` im Vergleich fast sauber.
+- Mit dem im Flieger verbauten Zuendakku samt verbauter Kabelstrecke treten auch ohne Killswitch, nur mit kurzer Verlaengerung direkt zur Zuendung, weiterhin Stoerungen auf.
+- Damit ist der Killswitch allein nicht mehr die vollstaendige Erklaerung.
+- Aktueller Hauptverdacht:
+- die im Flieger verbaute Zuendakku-/Zuendversorgungskabelstrecke
+- enge parallele Fuehrung von Zuendversorgung/Killswitch-Leitungen und Servo-/RC-Leitungen Richtung Motor
+- eine bisher unbemerkte Verbindung oder Kopplung zwischen Zuendversorgungssystem und Empfaenger-/RC-System
+- Geplante Pruefung:
+- elektrische Verbindung zwischen Zuendakkusystem und Empfaengerakkusystem durchmessen
+- Zuendversorgungskabel raeumlich von RC-/Servo-/Killswitch-Signalleitungen trennen und erneut mit ESP32-Sniffer vergleichen
 
 ### 1. Kurzzeitige RC-Aussetzer unter Motorstoerung
 
@@ -131,6 +139,20 @@ Diese Datei sammelt das aktuelle Stoerthema rund um laufenden Verbrennungsmotor,
 - Schlussfolgerung:
 - Der Killswitch ist nicht nur ein indirekter Verdachtskandidat, sondern zeigt selbst auffaelliges Verhalten und liefert auch direkt an seinem Empfaenger-Stecker messbare Stoerpulse.
 
+### 10. Neuer Killswitch ersetzt, Stoerung bleibt bei verbauter Zuendakku-Kabelstrecke
+
+- Ein neuer Killswitch wurde eingebaut.
+- Die Stoerprobleme bestehen weiterhin.
+- Wichtige Eingrenzung:
+- Der fruehere saubere Test mit direkter Zundungsversorgung nutzte einen separaten Akku direkt an der Zuendung.
+- Dieser Aufbau umging die im Flieger verbaute Zuendakku- und Kabelhardware.
+- Mit dem im Flieger verbauten Zuendakku und dessen Kabelstrecke treten auch dann Stoerungen auf, wenn der Akku mit einer kurzen Verlaengerung direkt an die Zuendung angeschlossen wird und der Killswitch nicht im Strompfad liegt.
+- Beobachtung am Kabelbaum:
+- Servo- und Killswitch-Leitungen nach vorne zum Motor laufen einige Zentimeter eng parallel zur Versorgungsleitung fuer Zuendung/Killswitch.
+- Aktuelle Arbeitsannahme:
+- Die verbaute Zuendversorgungsleitung oder deren Fuehrung koppelt Stoerungen in die RC-/Servo-Signalumgebung ein.
+- Eine direkte elektrische Verbindung zwischen Zuendakku- und Empfaengerakkusystem ist noch nicht nachgewiesen und soll gezielt durchgemessen werden.
+
 ## Aktuelle technische Bewertung
 
 ### Wahrscheinlichste Ursache
@@ -138,6 +160,7 @@ Diese Datei sammelt das aktuelle Stoerthema rund um laufenden Verbrennungsmotor,
 - EMV-Einkopplung auf ESC-Signalleitung
 - oder verschobene Masse-Referenz zwischen Arduino, Empfaenger und ESC
 - oder Stoerung ueber die 5-V-Versorgung
+- oder Einkopplung von der verbauten Zuendakku-/Zuendversorgungsleitung in parallel gefuehrte RC-/Servo-Leitungen
 
 ### Weniger wahrscheinlich
 
@@ -158,6 +181,8 @@ Diese Datei sammelt das aktuelle Stoerthema rund um laufenden Verbrennungsmotor,
 - Mit laufendem Verbrenner und Killswitch zeigen sich auf dem Empfaengerkanal selbst bereits `OUT_OF_RANGE`-Stoerpulse.
 - Direkt am Killswitch-Stecker Richtung Empfaenger wurden ebenfalls Stoerpulse gemessen.
 - Die Killswitch-Kontroll-LED zeigte im Stoerfall sichtbares Fehlverhalten.
+- Ein neuer Killswitch allein behebt das Problem nicht.
+- Die im Flieger verbaute Zuendakku- und Kabelstrecke bleibt auch ohne Killswitch als Stoerpfad auffaellig.
 
 ## Offene Risiken
 
@@ -173,6 +198,9 @@ Diese Datei sammelt das aktuelle Stoerthema rund um laufenden Verbrennungsmotor,
 - ESC-Signal `D4` zusammen mit `GND` als verdrilltes Paar fuehren.
 - Diese Leitung maximal weit weg von Zuendkabel, Zuendmodul und Motorleitungen legen.
 - Gemeinsame Massefuehrung prufen, keine stoerenden Rueckstroeme ueber empfindliche Signalmasse fuehren.
+- Zuendakku-/Zuendversorgungsleitung getrennt von Servo-, RC- und Killswitch-Signalleitungen fuehren.
+- Parallelfuehrungen zwischen Zuendversorgung und RC-/Servoleitungen vermeiden, besonders im vorderen Motorbereich.
+- Wenn Kreuzungen unvermeidbar sind, Leitungen moeglichst kurz und rechtwinklig kreuzen.
 
 ### B. Einfache Hardware-Nachbesserungen
 
@@ -180,11 +208,26 @@ Diese Datei sammelt das aktuelle Stoerthema rund um laufenden Verbrennungsmotor,
 - `4.7k` bis `10k` Pulldown von ESC-Signal nach `GND`, moeglichst nah am ESC.
 - Ferrit auf ESC-Signalleitung pruefen.
 - Ferrit oder zusaetzliche Beruhigung auf der 5-V-Zuleitung pruefen.
+- Ferrit auf die Zuendakku-/Zuendversorgungsleitung pruefen, moeglichst nahe am Stoerpfad.
+- Ferrit auf Servo-/RC-Buendel Richtung Motor pruefen, wenn die Leitungsfuehrung allein nicht reicht.
 
 ### C. Versorgung und Bezugspotential
 
 - Test mit sauberer separater 5-V-Versorgung fuer Arduino und Empfaenger.
 - Spannungsverhalten und Massebezug bei laufendem Verbrenner weiter beobachten.
+- Zuendakku- und Empfaengerakku-System mit Multimeter auf unerwuenschte Verbindung durchmessen.
+- Zwischen den Systemen sowohl Widerstand als auch moegliche Spannungspotentiale im ausgeschalteten und eingeschalteten Zustand pruefen.
+
+### C2. Entstoeroptionen direkt an Winde, Arduino und ESC
+
+- ESC-Signalleitung `D4` weiter als verdrilltes Paar mit Masse fuehren.
+- Serienwiderstand `220 .. 470 Ohm` nahe am Arduino in `D4` einsetzen, falls noch nicht umgesetzt.
+- Pulldown `4.7k .. 10k` von ESC-Signal nach `GND` nahe am ESC einsetzen, falls noch nicht umgesetzt.
+- Zusaetzlichen Stuetzkondensator an der 5-V-Schiene nahe am Arduino pruefen, z. B. `100 nF` plus `47 .. 220 uF`.
+- Hall-Sensor lokal mit `100 nF` direkt zwischen `VCC` und `GND` stuetzen.
+- RC-Eingaenge `D3` und `D5` nur mit sauberer gemeinsamer Masse fuehren; bei Bedarf Signalleitung jeweils mit GND verdrillen.
+- Arduino/Empfaenger-5-V-Leitung und ESC-/Motorleistung klar getrennt fuehren.
+- Alle Massestellen sternfoermig bzw. mit klar definiertem Rueckweg pruefen; keine Motor- oder Zuendstroeme ueber Arduino-/Signalmasse fuehren.
 
 ### D. Weitere Messungen
 
@@ -199,6 +242,10 @@ Diese Datei sammelt das aktuelle Stoerthema rund um laufenden Verbrennungsmotor,
 - Den Killswitch-Pfad nun gezielt in Teilstufen wieder einbauen, um den genauen Stoerpfad einzugrenzen.
 - Falls noetig, direkt am Killswitch-Stecker messen, um zu unterscheiden zwischen Stoereinkopplung vor dem Modul, im Modul oder auf seinem Leitungsweg.
 - Austausch gegen einen neuen Killswitch vorbereiten und den gleichen Messablauf danach wiederholen.
+- Nach Umlegen der Zuendversorgung den bestehenden ESP32-Messablauf wiederholen:
+- `D4 -> ESC`
+- Empfaengerkanal vor Arduino
+- Killswitch-/Zuendungsnahe Messpunkte nach Bedarf
 
 ### E. Firmware nur als zweite Linie
 
