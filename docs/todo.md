@@ -25,13 +25,28 @@
 - Empfaengerkanal vor dem Arduino dokumentiert: `Motor aus` sauber, `Motor an` mit Killswitch bereits stoerbehaftet
 - Killswitch-Stecker Richtung Empfaenger dokumentiert: direkte Stoerpulse messbar, Kontroll-LED zeigte Fehlverhalten
 - neuen Killswitch beschaffen und den kompletten Vergleichsablauf danach wiederholen
+- neuer Killswitch eingebaut, Stoerung bleibt bei verbauter Zuendakku- und Kabelstrecke bestehen
+- Zuendakku- und Empfaengerakkusystem elektrisch auf unerwuenschte Verbindung pruefen
+- Zuendversorgungskabel weg von Servo-, RC- und Killswitch-Signalleitungen legen und danach erneut loggen
+- Entstoermassnahmen an der Winde pruefen: `D4`-Serienwiderstand, ESC-Pulldown, lokale 5-V-Stuetzung, Ferrite
+- Ferritkern nahe am ESC umgesetzt: alle drei ESC-Adern gemeinsam mehrfach durchgefuehrt, danach keine Stoerungen mehr beobachtet
+- Ferritloesung in wiederholten Motor-, Last- und Reichweitentests bestaetigen
 - Endschalter elektrisch und mechanisch geprueft, erster echter Seilweg-Endtest erfolgreich
 - Werkbank-Testbench ohne Seil mit angeschlossenem Motor pruefen
 - Hall-Signal mit langsamer und hoher Drehzahl pruefen
 - Stoerfestigkeit der 5-V-Schiene unter Motorlast pruefen
 - getrennte Arduino-Versorgung gegen gemeinsame Masse-/Signalstoerung abgrenzen und dokumentieren
 - Temperaturverhalten von ACS712 und ESC pruefen
+- Ursache der auffaelligen Motorerwaermung trotz kurzer Laufzeit untersuchen; Strom, Laufzeit, Trommelbewegung und mechanische Last mit dem Pi-Logger korrelieren
 - Leitungsfuehrung auf Stoereinkopplung pruefen
+
+## Pi-Logger
+
+- Raspberry Pi OS Lite 64-bit auf Pi Zero 2 W eingerichtet
+- Heim-WLAN und mobiler Hotspot als NetworkManager-Profile eingerichtet
+- Logger nach `/opt/seilwinde-logger` installiert; `seilwinde-logger.service` ist aktiviert und startet nach Reboot erfolgreich
+- USB-Gadget nur fuer die Einrichtung verwendet und danach wieder deaktiviert, damit der USB-Datenport fuer den Arduino frei ist
+- offen: Arduino per USB anschliessen und echte CSV-Session mit Header, `telemetry` und Zustandswechsel-`event` pruefen
 
 ## Firmware-Tests
 

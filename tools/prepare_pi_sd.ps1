@@ -1,9 +1,12 @@
 param(
     [string]$DriveLetter = "E",
+    [int]$DiskNumber = -1,
     [Parameter(Mandatory = $true)]
     [string]$WifiSsid,
     [Parameter(Mandatory = $true)]
     [string]$WifiPassword,
+    [string]$SecondaryWifiSsid = "",
+    [string]$SecondaryWifiPassword = "",
     [Parameter(Mandatory = $true)]
     [string]$PiPassword,
     [string]$Hostname = "seilwinde-logger",
@@ -20,7 +23,7 @@ function Get-LatestRpiOsLiteImageUrl {
     $imagePattern = 'href="([^"]+\.img\.xz)"'
 
     $indexHtml = (Invoke-WebRequest -Uri $baseUrl -UseBasicParsing).Content
-    $folders = [regex]::Matches($indexHtml, $folderPattern) | ForEach-Object { $_.Groups[1].Value } | Sort-Object
+    $folders = @([regex]::Matches($indexHtml, $folderPattern) | ForEach-Object { $_.Groups[1].Value } | Sort-Object)
     if (-not $folders) {
         throw "Kein Raspberry-Pi-OS-Lite-Arm64-Ordner gefunden."
     }
@@ -28,7 +31,7 @@ function Get-LatestRpiOsLiteImageUrl {
     $latestFolder = $folders[-1]
     $folderUrl = "$baseUrl$latestFolder"
     $folderHtml = (Invoke-WebRequest -Uri $folderUrl -UseBasicParsing).Content
-    $images = [regex]::Matches($folderHtml, $imagePattern) | ForEach-Object { $_.Groups[1].Value } | Sort-Object
+    $images = @([regex]::Matches($folderHtml, $imagePattern) | ForEach-Object { $_.Groups[1].Value } | Sort-Object)
     if (-not $images) {
         throw "Kein .img.xz-Image im Ordner $latestFolder gefunden."
     }
@@ -37,16 +40,31 @@ function Get-LatestRpiOsLiteImageUrl {
 }
 
 function Get-PhysicalDrivePath {
-    param([string]$DriveLetter)
+    param(
+        [string]$DriveLetter,
+        [int]$DiskNumber
+    )
 
-    $partition = Get-Partition -DriveLetter $DriveLetter
-    if (-not $partition) {
-        throw "Laufwerk $DriveLetter`: nicht gefunden."
+    if ($DiskNumber -ge 0) {
+        $disk = Get-Disk -Number $DiskNumber
+    }
+    else {
+        $partition = Get-Partition -DriveLetter $DriveLetter
+        if (-not $partition) {
+            throw "Laufwerk $DriveLetter`: nicht gefunden."
+        }
+
+        $disk = Get-Disk -Number $partition.DiskNumber
     }
 
-    $disk = Get-Disk -Number $partition.DiskNumber
     if (-not $disk) {
-        throw "Kein Datentraeger zu Laufwerk $DriveLetter`: gefunden."
+        throw "Zieldatentraeger nicht gefunden."
+    }
+    if ($disk.IsBoot -or $disk.IsSystem) {
+        throw "Zieldatentraeger $($disk.Number) ist ein Boot- oder Systemdatentraeger."
+    }
+    if ($disk.BusType -ne "USB") {
+        throw "Zieldatentraeger $($disk.Number) ist kein USB-Datentraeger."
     }
 
     return "\\.\PhysicalDrive$($disk.Number)"
@@ -75,6 +93,8 @@ function New-CloudInitFiles {
         [string]$Timezone,
         [string]$WifiSsid,
         [string]$WifiPassword,
+        [string]$SecondaryWifiSsid,
+        [string]$SecondaryWifiPassword,
         [string]$SshPublicKey
     )
 
@@ -96,6 +116,7 @@ hostname: $Hostname
 manage_etc_hosts: true
 timezone: $Timezone
 ssh_pwauth: $sshPwauth
+enable_ssh: true
 users:
   - name: $PiUser
     gecos: Seilwinde Logger
@@ -109,6 +130,18 @@ chpasswd:
     - ${PiUser}:$PiPassword
 "@
 
+    $secondaryWifi = ""
+    if (-not [string]::IsNullOrWhiteSpace($SecondaryWifiSsid)) {
+        if ([string]::IsNullOrWhiteSpace($SecondaryWifiPassword)) {
+            throw "Fuer das zweite WLAN fehlt das Passwort."
+        }
+
+        $secondaryWifi = @"
+      "$SecondaryWifiSsid":
+        password: "$SecondaryWifiPassword"
+"@
+    }
+
     $networkConfig = @"
 version: 2
 wifis:
@@ -118,6 +151,7 @@ wifis:
     access-points:
       "$WifiSsid":
         password: "$WifiPassword"
+$secondaryWifi
 "@
 
     $userDataPath = Join-Path $TargetDirectory "user-data"
@@ -131,15 +165,17 @@ wifis:
     }
 }
 
-$imagerCli = "C:\Program Files\Raspberry Pi Imager\rpi-imager-cli.cmd"
-if (-not (Test-Path -LiteralPath $imagerCli)) {
-    throw "Raspberry Pi Imager CLI nicht gefunden: $imagerCli"
+$imagerExe = "C:\Program Files\Raspberry Pi Imager\rpi-imager.exe"
+if (-not (Test-Path -LiteralPath $imagerExe)) {
+    throw "Raspberry Pi Imager nicht gefunden: $imagerExe"
 }
 
-$drivePath = Get-PhysicalDrivePath -DriveLetter $DriveLetter
+$drivePath = Get-PhysicalDrivePath -DriveLetter $DriveLetter -DiskNumber $DiskNumber
 $imageUrl = Get-LatestRpiOsLiteImageUrl
 $sshPublicKey = Get-OptionalSshKey -Path $SshPublicKeyPath
 $tempDir = Join-Path $env:TEMP "seilwinde-pi-sd"
+$imagePath = Join-Path $tempDir ([System.IO.Path]::GetFileName($imageUrl))
+$imageDownloadPath = "$imagePath.download"
 $cloudInitFiles = New-CloudInitFiles `
     -TargetDirectory $tempDir `
     -Hostname $Hostname `
@@ -148,10 +184,64 @@ $cloudInitFiles = New-CloudInitFiles `
     -Timezone $Timezone `
     -WifiSsid $WifiSsid `
     -WifiPassword $WifiPassword `
+    -SecondaryWifiSsid $SecondaryWifiSsid `
+    -SecondaryWifiPassword $SecondaryWifiPassword `
     -SshPublicKey $sshPublicKey
 
 Write-Host "Image URL: $imageUrl"
+Write-Host "Lokales Image: $imagePath"
 Write-Host "Zielgeraet: $drivePath"
 Write-Host "Cloud-Init-Verzeichnis: $tempDir"
 
-& $imagerCli --disable-verify --cloudinit-userdata $cloudInitFiles.UserDataPath --cloudinit-networkconfig $cloudInitFiles.NetworkConfigPath $imageUrl $drivePath
+if (-not (Test-Path -LiteralPath $imagePath)) {
+    Remove-Item -LiteralPath $imageDownloadPath -Force -ErrorAction SilentlyContinue
+    Write-Host "Raspberry Pi OS Lite wird heruntergeladen ..."
+    Invoke-WebRequest -Uri $imageUrl -OutFile $imageDownloadPath -UseBasicParsing
+    Move-Item -LiteralPath $imageDownloadPath -Destination $imagePath -Force
+}
+else {
+    Write-Host "Vorhandenes lokales Image wird verwendet."
+}
+
+$hashResponse = Invoke-WebRequest -Uri "$imageUrl.sha256" -UseBasicParsing
+$hashText = if ($hashResponse.Content -is [byte[]]) {
+    [System.Text.Encoding]::UTF8.GetString($hashResponse.Content)
+}
+else {
+    [string]$hashResponse.Content
+}
+$expectedHash = ([regex]::Match($hashText, '^[0-9a-fA-F]{64}')).Value
+$actualHash = (Get-FileHash -LiteralPath $imagePath -Algorithm SHA256).Hash
+if ([string]::IsNullOrWhiteSpace($expectedHash) -or $actualHash -ne $expectedHash) {
+    throw "SHA-256-Pruefung des Raspberry-Pi-OS-Images fehlgeschlagen."
+}
+Write-Host "SHA-256-Pruefung erfolgreich."
+
+$imagerArgs = @(
+    "--cli"
+    "--disable-verify"
+    "--cloudinit-userdata"
+    $cloudInitFiles.UserDataPath
+    "--cloudinit-networkconfig"
+    $cloudInitFiles.NetworkConfigPath
+    $imagePath
+    $drivePath
+)
+$imagerStdout = Join-Path $env:TEMP "seilwinde-rpi-imager.stdout.log"
+$imagerStderr = Join-Path $env:TEMP "seilwinde-rpi-imager.stderr.log"
+Remove-Item -LiteralPath $imagerStdout, $imagerStderr -Force -ErrorAction SilentlyContinue
+$imagerProcess = Start-Process `
+    -FilePath $imagerExe `
+    -ArgumentList $imagerArgs `
+    -Wait `
+    -PassThru `
+    -NoNewWindow `
+    -RedirectStandardOutput $imagerStdout `
+    -RedirectStandardError $imagerStderr
+if ($imagerProcess.ExitCode -ne 0) {
+    $imagerOutput = @(
+        Get-Content -LiteralPath $imagerStdout -ErrorAction SilentlyContinue
+        Get-Content -LiteralPath $imagerStderr -ErrorAction SilentlyContinue
+    ) -join [Environment]::NewLine
+    throw "Raspberry Pi Imager wurde mit Exitcode $($imagerProcess.ExitCode) beendet.$([Environment]::NewLine)$imagerOutput"
+}

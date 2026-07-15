@@ -85,6 +85,16 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 - Die Hauptfirmware sendet auch im Stillstand aktiv `1000 us` und trennt das ESC-Signal nicht ab.
 - Beim Einschalten haelt die Hauptfirmware den ESC zuerst einige Sekunden auf `1000 us` und gibt `RUN` erst nach stabiler Trigger-Mittelstellung frei.
 - Kurze RC-PWM-Aussetzer werden in der Hauptfirmware waehrend `RUN` erst nach `3` aufeinanderfolgenden ungueltigen Reads als `RC_SIGNAL_LOSS` gewertet; saubere Leitungsfuehrung bleibt trotzdem Pflicht.
+- Bei den Verbrenner-EMV-Tests wurde `D4 -> ESC` direkt als gestoert nachgewiesen; als naechste Hardware-Massnahmen sind Serienwiderstand `220 .. 470 Ohm`, Pulldown `4.7k .. 10k` nahe am ESC und Ferrit auf der Signalleitung sinnvoll.
+- Umgesetzt am 15.07.2026: Alle drei Adern der ESC-Leitung wurden nahe am ESC gemeinsam mehrfach durch einen Ferritkern gefuehrt. Im anschliessenden Test waren die zuvor beobachteten Stoerungen verschwunden; Wiederholungs- und Belastungstests stehen noch aus.
+
+### Arduino- und ESC-Umfeld
+
+- 5-V-Schiene am Arduino lokal stuetzen, z. B. mit `100 nF` plus `47 .. 220 uF`.
+- ESC-Signal und Signal-GND als Paar fuehren und nicht parallel zu Zuend- oder Motorleitungen legen.
+- Arduino-/Empfaenger-Masse mit klar definiertem Rueckweg fuehren; Zuend- oder Motorstroeme duerfen nicht ueber Signalmasse laufen.
+- Servo-/RC-Leitungen und Zuendakku-/Zuendversorgungsleitung raeumlich trennen.
+- Bei verbleibenden Stoerungen Ferrite auf ESC-Signal, RC-Leitungsbuendel und Zuendversorgungsleitung gezielt vergleichen.
 
 ### Hall-Sensor
 
