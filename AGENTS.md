@@ -23,7 +23,13 @@ Die Steuerung soll eine RC-Seilwinde robust, nachvollziehbar und hardwaretauglic
 - Aenderungen sollen fuer kleine Mikrocontroller uebersichtlich bleiben.
 - Ein externer Logger bleibt rein passiv und darf nie Teil der Sicherheitskette werden.
 
+## V3.0-Planung
+
+Die nächste Generation heißt V3.0. Vor ihrer Entwicklung `docs/software_v3_0.md` und `docs/codex_v3_0_auftrag.md` lesen. Neue Firmware, portable Logik, Tests, Simulator und Hardwareunterlagen geordnet unter `entwicklung/seilwinde_v3/` aufbauen; V2.0 als Referenz erhalten. Nano R4 ist bevorzugter Kandidat, noch keine bestätigte EX-Bus-Portierung. JETIBOX-Textmenü ist öffentlich dokumentiert; grafischer Device Explorer darf nicht ungeprüft zugesagt werden.
+
 ## Festgelegter V2.0-Stand
+
+Die folgenden Pins und Verhaltensangaben gelten für V2.0; eine V3-Pinbelegung separat qualifizieren und dokumentieren.
 
 - Arbeitsdatei: `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`
 - Werkbank-Test: `src/Schleppseilwinde_Testbench/Schleppseilwinde_Testbench.ino`
@@ -37,7 +43,7 @@ Die Steuerung soll eine RC-Seilwinde robust, nachvollziehbar und hardwaretauglic
 
 Der Testbench-Sketch ist nur fuer beaufsichtigte Werkbanktests ohne RC-Empfaenger gedacht und ersetzt die Endschalter-Absicherung nicht.
 Im aktuellen Zwischenstand der Hauptfirmware wird der ACS712-Wert seriell beobachtet, aber die Stromschwelle wird erst nach Lasttests mit Seil als Fehlerkriterium aktiviert.
-Die Hauptfirmware sendet zusaetzlich ein festes CSV-Telemetrieformat fuer den Pi-Logger auf derselben seriellen Schnittstelle.
+Das feste CSV-Telemetrieformat fuer den Pi-Logger ist in docs/pi_logger.md als Ziel dokumentiert. Im am 2026-10-07 geprueften main-Sketch ist es noch nicht implementiert; Serial liefert Text-Debug. Vor Aenderungen den jeweiligen Branch erneut pruefen.
 Kurze RC-Aussetzer waehrend `RUN` werden erst nach `3` aufeinanderfolgenden ungueltigen RC-Lesungen als `RC_SIGNAL_LOSS` gelatcht, damit kurze EMV-Glitches keinen sofortigen Fehlstopp ausloesen.
 
 ## Dokumentationspflicht
@@ -50,6 +56,8 @@ Diese Unterlagen muessen aktiv gepflegt werden:
 - `docs/decisions.md`
 - `docs/pi_logger.md`
 - `docs/todo.md`
+- `docs/software_v3_0.md`
+- `docs/codex_v3_0_auftrag.md`
 
 Bei jeder relevanten Aenderung an Hardware, Pinbelegung, Sicherheitslogik, Lernlogik, Telemetrieformat oder Teststand muessen die passenden Dateien mit aktualisiert werden.
 
@@ -73,5 +81,5 @@ Bei jeder relevanten Aenderung an Hardware, Pinbelegung, Sicherheitslogik, Lernl
 - kurzer RC-Glitch waehrend `RUN` darf keinen Sofort-Fehlstopp mehr ausloesen
 - Lernfahrt vollstaendig
 - kurzer Reset ohne Ueberschreiben der Seillaenge
-- CSV-Header genau einmal nach Boot
-- `telemetry` im Intervall und `event` bei Zustandswechseln
+- nach Implementierung des Hauptfirmware-CSV: CSV-Header genau einmal nach Boot
+- nach Implementierung des Hauptfirmware-CSV: `telemetry` im Intervall und `event` bei Zustandswechseln

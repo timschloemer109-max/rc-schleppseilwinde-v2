@@ -1,5 +1,11 @@
 # RC-Schleppseilwinde V2.0
 
+## Nächste Entwicklung: V3.0
+
+Die neue Softwaregeneration wird als **V3.0** entwickelt. [Anforderungen und Erkenntnisse](docs/software_v3_0.md) sowie der [vollständige Codex-Auftrag](docs/codex_v3_0_auftrag.md) sind dokumentiert; der vorhandene V2.0-Sketch bleibt unveränderte Referenz. Für die neue Entwicklung ist `entwicklung/seilwinde_v3/` vorgesehen.
+
+Versorgung: Steuerung/Sensoren aus der RC-Anlage, Motor über ESC aus separatem **2S-LiPo**; der ESC-BEC ist unbenutzt. Bei der derzeitigen 6-V-RC-Versorgung des Schleppers ist ein passender Wandler auf stabile 5 V für die Steuerung vorgeschrieben, Auswahl/Einbau noch offen. Details: [Hardware](docs/hardware.md).
+
 Dieses Projekt entwickelt die Steuerung einer RC-Schleppseilwinde fuer Modellflugzeuge weiter. Der belastbare neue Arbeitsstand ist die erste Hardware-Version `Schleppseilwinde_V2_0` im Ordner `src/`.
 
 ## Zielbild

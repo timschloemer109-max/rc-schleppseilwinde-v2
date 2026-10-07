@@ -1,12 +1,26 @@
 # Offene Punkte, Messungen und Tests
 
+## V3.0-Entwicklung ab 2026-10-07
+
+Maßgeblicher Zielstand: [software_v3_0.md](software_v3_0.md). Ausführbarer Auftrag: [codex_v3_0_auftrag.md](codex_v3_0_auftrag.md).
+
+- Entwicklungsordner `entwicklung/seilwinde_v3/` mit Firmware, Core, Tests, Simulator, Hardware und Berichten aufbauen.
+- Nano-R4-Core, UART/Half-Duplex, Timer/Servo, ADC und Persistenz qualifizieren; JetiExBus besitzt noch kein R4-Backend.
+- Steuerungskern und EX-Bus-Parser auf dem Host testen; blockierende PWM-Lesungen ersetzen.
+- Kanaldaten, Telemetrie, JETIBOX-Einstellungen, Softstart und versionierte Parameter umsetzen.
+- uniLIGHT-Durchleitung/Warnung und High-Side-Leistungsschalter-Schnittstelle mit sicheren Defaults planen und testen.
+- Hauptfirmware-CSV implementieren und gegen den vorhandenen Pi-Logger prüfen; bisherige Doku ist Ziel, kein Nachweis der Ausgabe.
+- JETI-Studio-Senderemulator prüfen; EX-Bus-Testmaster mit unabhängigen Referenztelegrammen und Fehlerfällen ergänzen.
+- Hosttests, R4-Build und CI reproduzierbar machen; echte Hardwaretests separat protokollieren.
+- RC→5-V-Wandler für aktuelle 6 V / späteres HV auswählen; Einbau, Ripple, EMV, Einschaltfolgen und Rückspeisung prüfen.
+
 ## Vor dem ersten Flugbetrieb
 
 - Hall-Sensor-Typ und Magnetposition festlegen
 - Magnetanzahl final festgelegt: `2`
 - Magnetorientierung dokumentiert: `2` Magnete, `180 Grad` versetzt, gleiche Polrichtung
 - Anzahl Hall-Pulse pro Trommelumdrehung gemessen: `2`
-- ESC-Typ und BEC-Stromreserve dokumentieren
+- ESC-Typ und separate RC→5-V-Steuerungsversorgung dokumentieren; ESC-BEC bleibt unbenutzt
 - `Turnigy Plush 30A` im Aufbau dokumentieren
 - reale ACS712-Nullpunkt- und Lastwerte weiter messen und in `docs/calibration.md` nachfuehren
 - langsame PWM fuer sicheren Endanlauf einmessen

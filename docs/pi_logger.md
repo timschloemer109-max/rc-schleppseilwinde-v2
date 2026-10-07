@@ -1,6 +1,6 @@
 # Raspberry-Pi-Zero-2-W-Logger
 
-Diese Datei beschreibt den passiven Logger fuer die Hauptfirmware `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino`.
+Diese Datei beschreibt den passiven Logger und das vorgesehene CSV-Format für die Hauptfirmware. Codeabgleich am 2026-10-07: Der main-Sketch `src/Schleppseilwinde_V2_0/Schleppseilwinde_V2_0.ino` liefert Text-Debug, noch nicht das unten beschriebene CSV. Die Firmwareausgabe ist daher eine offene Entwicklungsaufgabe, kein bestätigter Ist-Stand.
 
 ## Zielbild
 
@@ -10,6 +10,8 @@ Diese Datei beschreibt den passiven Logger fuer die Hauptfirmware `src/Schleppse
 - Der Abruf der Daten erfolgt spaeter ueber `SSH`, `scp` oder `sftp`.
 
 ## Grenzen
+
+Für [V3.0](software_v3_0.md) sind auf Nano R4 USB-`Serial` für den Logger und `Serial1` für EX Bus getrennt zu prüfen. Ausgaben müssen zeitlich begrenzt sein; abgezogener USB und volle Puffer dürfen die Steuerung nicht blockieren. Der Pi hat eine eigene Versorgung; USB-Rückspeisung zur RC→5-V-Steuerungsversorgung vor Anschluss prüfen.
 
 - Der Pi ersetzt keine Endschalter-, Strom- oder Failsafe-Funktion.
 - Der Pi liest keine zusaetzlichen GPIOs als primaere Sicherheitsquelle ein.
@@ -37,7 +39,7 @@ Diese Datei beschreibt den passiven Logger fuer die Hauptfirmware `src/Schleppse
 - Der Pi braucht eine eigene stabile 5-V-Versorgung.
 - Der Logger darf mechanisch und elektrisch ausfallen, ohne die Winden-Sicherheitslogik zu beeinflussen.
 
-## Serielle Schnittstelle
+## Serielle Schnittstelle (Ziel nach Firmware-Implementierung)
 
 - Baudrate: `115200`
 - die Hauptfirmware sendet genau eine CSV-Kopfzeile nach dem Boot

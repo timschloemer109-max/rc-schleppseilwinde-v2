@@ -1,5 +1,16 @@
 # Entscheidungen und verworfene Ansaetze
 
+## Ergänzung 2026-10-07: V3.0 und Versorgung
+
+- Nächste Softwaregeneration: **V3.0**. Bestehende V2.0-Firmware bleibt Referenz; dies ist eine Planungsentscheidung.
+- ESC-BEC aktuell unbenutzt. Controller/Sensorik aus RC-Anlage; Motor über ESC aus separatem 2S-LiPo.
+- Für RC-Versorgung derzeit 6 V / später eventuell HV ist ein passender 5-V-Wandler vor der Steuerung verbindlich erforderlich; Bauteilwahl und Einbau sind offen.
+- Nano R4 ist bevorzugter Kandidat für die Erweiterungen. EX-Bus-Portierung und Hardwarequalifikation sind offen.
+- Öffentlich dokumentiertes JETIBOX-Textmenü als Konfigurationsbasis; grafischer Device Explorer nicht zugesagt.
+- Neue Entwicklung geordnet unter `entwicklung/seilwinde_v3/`; keine Änderungen an V2.0 durch diese Dokumentation.
+
+Vollständige Wünsche, technische Grenzen und Tests: [software_v3_0.md](software_v3_0.md); [Codex-Auftrag](codex_v3_0_auftrag.md). Frühere V2-Entscheidungen unten bleiben historischer Ausgangspunkt.
+
 ## Aktive Entscheidungen
 
 ### 1. Neue Basis ist der V2-Entwurf, nicht `seilwinde_1.2.ino`

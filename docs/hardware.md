@@ -35,12 +35,23 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 
 ## Stromversorgung
 
-- Der ESC versorgt den Motor aus dem Antriebsakku.
-- Nano, Empfaenger, Hall-Sensor und ACS712 brauchen eine stabile 5-V-Versorgung.
-- Wenn der ESC ein BEC hat, kann dieses 5 V fuer Nano und Empfaenger liefern.
-- Alle Massen muessen verbunden sein: ESC, Nano, Empfaenger, ACS712 und Hall-Sensor.
-- Mit dem `Turnigy Plush 30A` ist ein klassischer erster Aufbau gut machbar.
-- Die 5-V-Leitung ist im aktuellen Konzept kurz; zusaetzliche Pufferung auf der 5-V-Schiene ist deshalb vorerst nicht vorgesehen.
+Korrigierter Referenzstand, 2026-10-07:
+
+- Der Windenmotor wird **über den ESC aus einem separaten 2S-LiPo** versorgt (7,4 V nominal, 8,4 V voll).
+- **Der ESC-BEC versorgt aktuell nichts.** Seine Plusleitung im Servostecker isolieren; Signal und gemeinsame Masse bleiben angeschlossen.
+- Arduino, Hall-Sensor und ACS712 beziehen ihre Versorgung aus der **RC-Anlage**, unabhängig vom Motorakku.
+- Die RC-Anlage im Swiss Trainer steht derzeit auf **6,0 V**; eine spätere HV-Umstellung ist noch offen.
+- **Ein passender vorgeschalteter Wandler auf stabile 5,0 V für Arduino und Sensorik ist erforderlich.** Konkreter Wandler und Einbau sind noch nicht bestätigt. 6 V/HV nicht direkt an den 5-V-Pin anschließen.
+- Eingangsspannungsbereich für aktuelle 6 V einschließlich Einbrüchen und für das später gewählte HV-Maximum prüfen. Ausgangsstrom aus Controller/Sensoren plus Reserve bestimmen; Ripple, Transienten, EMV und Temperatur unter realer Last messen.
+- Motor, Servos und Lichtleistung nicht über den Steuerungswandler versorgen. Lokale Entkopplung passend zu Board und Sensoren prüfen.
+- RC-Anlage, ESC, Arduino und Sensoren brauchen gemeinsame Masse; Motorstrom nicht über dünne Signalmasse führen.
+- Bei USB-/Pi-Anschluss die Rückspeisung zwischen Versorgungen anhand der konkreten Boardbeschaltung prüfen. Kein ungeprüftes Parallelschalten von 5-V-Quellen.
+
+Die Schlepperintegration steht in [SYSTEMS.md](https://github.com/timschloemer109-max/king140-schlepper/blob/main/docs/SYSTEMS.md#5-v-versorgung-der-seilwinde). V3.0 und Nano-R4-Portierung sind [geplant](software_v3_0.md), nicht bereits umgesetzt.
+
+### Geplanter RC-Leistungsschalter
+
+Ein High-Side-Schalter soll nur den Pluspfad des ESC/Motors schalten. Steuerung und RC bleiben versorgt. Die Leistungsschaltung für 20–30 A plus Reserve, Treiber, unabhängige RC-Auswertung, Precharge und Einschalt-/Signalrückspeisung sind noch auszulegen. Fail-Safe ist AUS; nach Zuschalten braucht der ESC seine Arming-Sequenz und eine sichere Neutralfreigabe. Keine Low-Side-Trennung der gemeinsamen Signalmasse.
 
 ## Empfohlene Verdrahtung
 
@@ -114,33 +125,15 @@ Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 
 ## Schematischer Anschlussplan
 
-```text
-Antriebsakku
-  +--------------------> ESC Leistungseingang
-  |
-  +--------------------> ACS712 Primarseite / Leistungspfad nach Aufbau
+| Zweig | Anschlussfolge |
+| --- | --- |
+| Motorleistung | 2S-LiPo → ACS712-Leistungspfad → ESC → Motor |
+| Steuerungsversorgung | RC-Anlage → passender 5-V-Wandler (gefordert, noch auszuwählen) → Arduino + Hall + ACS712-VCC |
+| ESC-BEC | unbenutzt; Plus isoliert |
+| Masse | RC, Wandler, Arduino, Sensoren und ESC gemeinsam; Leistungs- und Signalrückströme sauber führen |
+| Signale | V2.0-Pins gemäß Tabelle oben; V3.0-Pinplan noch zu qualifizieren |
 
-ESC Motorausgang ------> Windenmotor
-
-ESC/BEC 5V ------------+-----------------> Nano 5V
-                       +-----------------> Empfaenger +5V
-                       +-----------------> Hall VCC
-                       +-----------------> ACS712 VCC
-
-Gemeinsame Masse ------+-----------------> Nano GND
-                       +-----------------> Empfaenger GND
-                       +-----------------> ESC GND
-                       +-----------------> Hall GND
-                       +-----------------> ACS712 GND
-
-Empfaenger CH Speed ---> Nano D3
-Empfaenger CH Trigger -> Nano D5
-Nano D4 --------------> ESC Signal
-Hall OUT -------------> Nano D2
-ACS712 OUT -----------> Nano A3
-Endschalter ----------> Nano D7 gegen GND
-Nano D13 -------------> Status-LED
-```
+Der High-Side-Leistungsschalter ist eine geplante Ergänzung des Motorzweigs, keine bereits eingebaute Funktion.
 
 ## Wichtige Anmerkung zum Schaltplan
 
@@ -160,7 +153,7 @@ Ein erster sauberer Schaltplan fuer den Aufbau liegt als SVG hier:
 
 ## Erste Hardware-Checks vor Motorlauf
 
-1. 5 V am Nano und Empfaenger messen.
+1. RC-Spannung und davon getrennt stabile 5 V hinter dem Wandler am Arduino und den Sensoren messen; ESC-BEC-Plus muss isoliert sein.
 2. GND-Verbindungen durchklingeln.
 3. Trigger zum Einschalten in Mittelstellung lassen und die normalen ESC-Beeptoene abwarten.
 4. Endschalter-Eingang im Monitor pruefen.
