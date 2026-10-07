@@ -27,11 +27,16 @@ wurden geprüft und erhalten; keine V2-Firmwareänderung, kein automatischer Mer
 | Reale JETI/R4-Pegel als Direktanschluss | **fehlgeschlagen** als Garantienachweis | JETI HIGH≥3,0/LOW≤1,5 V gegenüber R4@5 V HIGH≥4,0/LOW≤1,0 V. Qualifizierter Pegel-/Half-Duplex-Treiber nötig; keine Messwerte erfunden |
 | JETI-Studio-GUI/Senderemulator | **nicht ausführbar** | Keine Installation/Prozess gefunden, kein Sender/Empfänger; offizielle Sender-/Lua-Funktionen recherchiert, keine RA4M1-/EX-Bus-Hardwareemulation nachgewiesen |
 | Reale R4-/ESC-/Flash-/Versorgungs-/Motorprüfung | **nicht ausführbar** | CLI-Portinventar leer; kein Upload, kein Motorlauf. [Werkbank-Abnahme HW-01…15](../hardware/README.md) vollständig offen |
-| GitHub CI | **eingerichtet** | Native Sanitizer und saubere R4-Builds für beide Baudprofile. Ausführung/Run-Status nach Push gesondert dokumentieren; kein erfundenes CI-Ergebnis |
+| GitHub CI | **bestanden** | [Run 37615791297](https://github.com/timschloemer109-max/rc-schleppseilwinde-v2/actions/runs/37615791297) für `c1f2cbdeaeca6ff02eff716418089a4c9618da23`: alle drei Jobs erfolgreich, native ASan/UBSan einschließlich LeakSanitizer unter Ubuntu 24.04 und vollständige Nano-R4-Builds 125000/250000 aus sauberem Checkout |
 
 Die Prüfzahlen sind Assertions/Checks, keine gleichwertigen unabhängigen
 Hardwareversuche. 0 ms Endschalterlatenz in den sechs Replayfällen bedeutet
 STOP **im selben injizierten 1-ms-Tick**, keine gemessene Echtzeitlatenz.
+
+Reviewbarer Entwicklungsstand: [Draft-PR #2](https://github.com/timschloemer109-max/rc-schleppseilwinde-v2/pull/2).
+Der erfolgreiche CI-Commit enthält dieselben Firmware-/Testquellen wie der oben
+genannte Implementierungscommit; spätere reine Berichtsänderungen ändern diese
+Testergebnisse nicht.
 
 ## Reproduzieren / Werkzeuge
 
