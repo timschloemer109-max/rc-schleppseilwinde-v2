@@ -25,7 +25,15 @@ Die Steuerung soll eine RC-Seilwinde robust, nachvollziehbar und hardwaretauglic
 
 ## V3.0-Planung
 
-Die nächste Generation heißt V3.0. Vor ihrer Entwicklung `docs/software_v3_0.md` und `docs/codex_v3_0_auftrag.md` lesen. Neue Firmware, portable Logik, Tests, Simulator und Hardwareunterlagen geordnet unter `entwicklung/seilwinde_v3/` aufbauen; V2.0 als Referenz erhalten. Nano R4 ist bevorzugter Kandidat, noch keine bestätigte EX-Bus-Portierung. JETIBOX-Textmenü ist öffentlich dokumentiert; grafischer Device Explorer darf nicht ungeprüft zugesagt werden.
+Die nächste Generation heißt V3.0. Vor Änderungen `docs/software_v3_0.md` und `docs/codex_v3_0_auftrag.md` lesen. Implementierte Firmware, portable Logik, Tests, Simulator und Hardwareunterlagen liegen unter `entwicklung/seilwinde_v3/`; V2.0 als Referenz erhalten. Nano R4/Core 1.6.0 ist softwareseitig baubar, reale Hardwarequalifikation offen. JETIBOX-Textmenü ist implementiert; grafischer Device Explorer wird nicht zugesagt. Ergebnisse und Befehle stehen in V3 README/reports.
+
+- V3-Einstellungen zentral in `core/settings.cpp`, Hardwareprofil in `firmware/Schleppseilwinde_V3_0/board_config.hpp` darunter. MotorBenchQualified bleibt standardmäßig false; unqualifizierte Adapter niemals durch EEPROM/Menu freigeben.
+- Native Logik und Sketch teilen dieselben Quellen über `build.py`-Staging. Nur frische gültige Kanalframes erneuern RC-Alter; EX Bus besitzt kein Hold-Flag, Empfänger-Hold muss ausgeschaltet sein.
+- Endschalter vor/innerhalb/nach begrenzter Busbearbeitung. Sicherheitsstopp übersteuert Rampen. LEARN ist manuelles Ausziehen bei STOP-PWM, Voll-Lernen nur ab Nullreferenz.
+- Keine synchronen `Serial1.write/flush`, `analogRead`, `EEPROM.update` oder Servo-Defaultattach in den Steuerpfad übernehmen; SCI2/GPT/ADC/Flash-BGO-Adapter verwenden.
+- Gültige 1000-us-STOP-Pulse erhalten. RX/TX-Turnaround und asynchrones Flashjournal gesondert testen; Menüübernahme und Antrieb während Commit sperren, danach neu armieren.
+- Flashslot-Abstand mindestens 1024 Byte, Commitbyte zuletzt; V2-EEPROM nicht importieren. Lernen nur RAM, explizites Save im Stillstand.
+- Firmwareänderungen erfordern passende native Prüfungen, beide R4-Baudbuilds und aktualisierte Hardware-Abnahme. Kein unbeaufsichtigtes Flashen/Motorstart.
 
 ## Festgelegter V2.0-Stand
 

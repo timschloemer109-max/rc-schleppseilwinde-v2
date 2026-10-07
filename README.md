@@ -2,7 +2,7 @@
 
 ## Nächste Entwicklung: V3.0
 
-Die neue Softwaregeneration wird als **V3.0** entwickelt. [Anforderungen und Erkenntnisse](docs/software_v3_0.md) sowie der [vollständige Codex-Auftrag](docs/codex_v3_0_auftrag.md) sind dokumentiert; der vorhandene V2.0-Sketch bleibt unveränderte Referenz. Für die neue Entwicklung ist `entwicklung/seilwinde_v3/` vorgesehen.
+**V3.0** ist unter [entwicklung/seilwinde_v3/](entwicklung/seilwinde_v3/README.md) implementiert: portable Sicherheitslogik, EX Bus/JETIBOX, CSV, Tests und Nano-R4-Adapter. [Anforderungen](docs/software_v3_0.md), [Auftrag](docs/codex_v3_0_auftrag.md) und [tatsächliche Testergebnisse](entwicklung/seilwinde_v3/reports/test_report.md) sind dokumentiert. Der Standardbuild sperrt Motorbewegungen; Hardwareabnahme bleibt offen. V2.0 bleibt unveränderte Referenz.
 
 Versorgung: Steuerung/Sensoren aus der RC-Anlage, Motor über ESC aus separatem **2S-LiPo**; der ESC-BEC ist unbenutzt. Bei der derzeitigen 6-V-RC-Versorgung des Schleppers ist ein passender Wandler auf stabile 5 V für die Steuerung vorgeschrieben, Auswahl/Einbau noch offen. Details: [Hardware](docs/hardware.md).
 

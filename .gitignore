@@ -9,3 +9,9 @@ build/
 Thumbs.db
 Desktop.ini
 *.code-workspace
+
+# V3 reproducible generated files and local toolchains
+entwicklung/seilwinde_v3/.build/
+entwicklung/seilwinde_v3/artifacts/
+__pycache__/
+*.pyc

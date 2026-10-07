@@ -1,0 +1,44 @@
+name: Seilwinde V3
+on:
+  push:
+    paths: ['entwicklung/seilwinde_v3/**', 'pi/seilwinde-logger/**', '.github/workflows/seilwinde-v3.yml']
+  pull_request:
+    paths: ['entwicklung/seilwinde_v3/**', 'pi/seilwinde-logger/**', '.github/workflows/seilwinde-v3.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Strict C++ and address/undefined sanitizers
+        run: python entwicklung/seilwinde_v3/build.py native --compiler clang++ --sanitize
+  nano-r4:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        baud: [125000, 250000]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pinned Arduino CLI
+        run: |
+          mkdir -p "$RUNNER_TEMP/arduino-cli"
+          curl --fail --location https://downloads.arduino.cc/arduino-cli/arduino-cli_1.4.1_Linux_64bit.tar.gz -o "$RUNNER_TEMP/arduino-cli/cli.tar.gz"
+          tar -xzf "$RUNNER_TEMP/arduino-cli/cli.tar.gz" -C "$RUNNER_TEMP/arduino-cli"
+          echo "$RUNNER_TEMP/arduino-cli" >> "$GITHUB_PATH"
+      - name: Pinned Renesas core, clean staging, target build
+        run: python entwicklung/seilwinde_v3/build.py arduino --install --bus-baud ${{ matrix.baud }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nano-r4-build-${{ matrix.baud }}
+          path: |
+            entwicklung/seilwinde_v3/.build/nano-r4-*/*.elf
+            entwicklung/seilwinde_v3/.build/nano-r4-*/*.map
+            entwicklung/seilwinde_v3/.build/sketch/Schleppseilwinde_V3_0/build/**

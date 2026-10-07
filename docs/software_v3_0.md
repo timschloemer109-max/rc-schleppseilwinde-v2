@@ -1,6 +1,8 @@
 # Seilwinden-Software V3.0: Anforderungen und Übergabe
 
-Stand: 2026-10-07. Diese Datei ist der Entwicklungsauftrag aus den bisherigen Wünschen und Erkenntnissen; sie beschreibt **keine bereits implementierte V3.0**. Der geprüfte Firmwarestand bleibt V2.0. Der Repositoryname bleibt zunächst unverändert.
+Stand: 2026-10-07. Diese Datei bleibt die zentrale Anforderungsspezifikation. V3.0 ist jetzt als softwareseitig geprüfter Entwicklungsstand unter [entwicklung/seilwinde_v3/](../entwicklung/seilwinde_v3/README.md) implementiert. [Tatsächliche Ergebnisse und offene Abnahme](../entwicklung/seilwinde_v3/reports/test_report.md) trennen Host-/Buildnachweise von ungemessener Hardware. V2.0 bleibt unveränderte Referenz; Repositoryname unverändert.
+
+Nano R4/Core 1.6.0 ist für beide Baudprofile baubar. UART/GPT-PWM/ADC/Flash-BGO sind eigene begrenzte Adapter; JetiExBus/Servo werden nicht verlinkt. Motorfreigabe standardmäßig gesperrt, uniLIGHT-/High-Side-Adapter ausdrücklich deaktiviert, Stromkalibrierung offen. Aus der Pegelprüfung folgt ein geeigneter Schnittstellentreiber: JETI-Garantien HIGH>=3,0/LOW<=1,5 V reichen für R4@5 V mit VIH>=4,0/VIL<=1,0 V nicht aus. Öffentliches Kanalformat hat kein Hold-Flag; JETI muss bei RF-Verlust keine Kanal-Hold-Frames ausgeben. Die ursprünglichen Anforderungen/Recherche unten bleiben nachvollziehbar; Ist-Stand steht im verlinkten Bericht.
 
 Der ausführbare Codex-Auftrag steht in [codex_v3_0_auftrag.md](codex_v3_0_auftrag.md). Vor Entwicklungsbeginn immer den aktuellen Branch, Code und [AGENTS.md](../AGENTS.md) prüfen.
 

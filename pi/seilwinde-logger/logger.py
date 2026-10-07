@@ -37,8 +37,14 @@ ARDUINO_HEADER = [
     "event_name",
     "event_value",
 ]
-CSV_HEADER = ["host_utc", *ARDUINO_HEADER]
-EXPECTED_FIELD_COUNT = len(ARDUINO_HEADER)
+V3_EXTRA_HEADER = [
+    "schema_version", "position_valid", "remaining_mm", "remaining_percent",
+    "power_enabled", "light_warning", "log_dropped", "bus_errors", "loop_max_us",
+    "actual_esc_output_us", "hardware_inhibited",
+]
+V3_HEADER = [*ARDUINO_HEADER, *V3_EXTRA_HEADER]
+CSV_HEADER = ["host_utc", *V3_HEADER]
+EXPECTED_FIELD_COUNT = len(V3_HEADER)
 PORT_PREFIXES = ("/dev/ttyUSB", "/dev/ttyACM")
 
 RUNNING = True
@@ -122,14 +128,19 @@ def parse_arduino_line(raw_line: str) -> list[str] | None:
     if parsed is None:
         return None
 
-    if parsed == ARDUINO_HEADER:
+    if parsed == ARDUINO_HEADER or parsed == V3_HEADER:
         return None
 
-    if len(parsed) != EXPECTED_FIELD_COUNT:
+    if len(parsed) == len(ARDUINO_HEADER):
+        parsed.extend([""] * len(V3_EXTRA_HEADER))
+    elif len(parsed) != EXPECTED_FIELD_COUNT:
         return None
 
     record_type = parsed[0]
     if record_type not in {"telemetry", "event"}:
+        return None
+
+    if parsed[len(ARDUINO_HEADER)] not in {"", "3.0"}:
         return None
 
     return parsed

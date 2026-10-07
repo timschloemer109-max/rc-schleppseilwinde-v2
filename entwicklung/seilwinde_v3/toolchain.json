@@ -1,0 +1,6 @@
+{
+  "arduino_cli": "1.4.1",
+  "core": "arduino:renesas_uno",
+  "core_version": "1.6.0",
+  "fqbn": "arduino:renesas_uno:nanor4"
+}

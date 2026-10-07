@@ -4,6 +4,10 @@ Diese Datei beschreibt den passiven Logger und das vorgesehene CSV-Format für d
 
 ## Zielbild
 
+V3 implementiert CSV mit Bootheader, 250-ms-Telemetrie und Zustandsereignissen. Die historischen 23 Felder werden ergänzt um `schema_version,position_valid,remaining_mm,remaining_percent,power_enabled,light_warning,log_dropped,bus_errors,loop_max_us,actual_esc_output_us,hardware_inhibited`. Version `3.0`, fehlende Stromkalibrierung als leeres Feld. `esc_output_us` ist Steuerungs-Sollwert, `actual_esc_output_us` Adapter-Sollwert nach Sperren; keine elektrischen Messwerte. `rc_mode/rc_speed_us/rc_trigger_us` zeigen letzte plausible Buswerte, Gültigkeitsfelder tatsächlich akzeptierte Kanaldaten. Standardprofil sperrt Motor.
+
+Pi-Parser akzeptiert V2-23 und V3-34 Spalten und normalisiert auf 34 plus UTC. Fehlende V2-Felder bleiben leer; unbekannte Versionen, Debug/Header/Teilzeilen werden verworfen. USB höchstens 32 Byte je loop, 2048-Byte-Ring verwirft bei Überlast ganze neue Zeilen. Ereignisse bestmöglich, `log_dropped` zeigt Verlust. Parser-Hosttests bestanden; echtes Pi/USB-Ende-zu-Ende offen. [V3-README](../entwicklung/seilwinde_v3/README.md), [Bericht](../entwicklung/seilwinde_v3/reports/test_report.md).
+
 - Der Arduino bleibt allein fuer Steuerung und Sicherheitslogik verantwortlich.
 - Der Pi Zero 2 W zeichnet nur die serielle CSV-Telemetrie mit Zeitstempel auf.
 - Jede serielle Sitzung erzeugt eine eigene CSV-Datei.

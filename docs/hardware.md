@@ -2,6 +2,8 @@
 
 Diese Datei ist der aktuelle Hardware-Stand fuer `Schleppseilwinde_V2_0`.
 
+V3.0 ist separat für Nano R4 implementiert und baubar. Software-Pinplan und offene reale Messungen: [V3-Hardware](../entwicklung/seilwinde_v3/hardware/README.md). Keine V2-Messwerte als R4-Freigabe übernehmen. Garantierte JETI-Pegel (HIGH ab 3,0 V/LOW bis 1,5 V) passen nicht zu den R4-5-V-Grenzen (VIH ab 4,0 V/VIL bis 1,0 V); geeigneten Schnittstellentreiber festlegen und messen.
+
 ## Ziel-Hardware
 
 - Arduino Nano
@@ -47,7 +49,7 @@ Korrigierter Referenzstand, 2026-10-07:
 - RC-Anlage, ESC, Arduino und Sensoren brauchen gemeinsame Masse; Motorstrom nicht über dünne Signalmasse führen.
 - Bei USB-/Pi-Anschluss die Rückspeisung zwischen Versorgungen anhand der konkreten Boardbeschaltung prüfen. Kein ungeprüftes Parallelschalten von 5-V-Quellen.
 
-Die Schlepperintegration steht in [SYSTEMS.md](https://github.com/timschloemer109-max/king140-schlepper/blob/main/docs/SYSTEMS.md#5-v-versorgung-der-seilwinde). V3.0 und Nano-R4-Portierung sind [geplant](software_v3_0.md), nicht bereits umgesetzt.
+Die Schlepperintegration steht in [SYSTEMS.md](https://github.com/timschloemer109-max/king140-schlepper/blob/main/docs/SYSTEMS.md#5-v-versorgung-der-seilwinde). V3.0/Nano R4 ist softwareseitig [implementiert](../entwicklung/seilwinde_v3/README.md); tatsächliche Verdrahtungs-/Versorgungsabnahme bleibt offen.
 
 ### Geplanter RC-Leistungsschalter
 

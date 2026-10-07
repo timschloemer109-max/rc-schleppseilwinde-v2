@@ -2,6 +2,8 @@
 
 Stand: 2026-10-07. Den folgenden Auftrag vollständig in Codex einfügen. Die Dokumentation beschreibt den Zielstand; fehlende Hardwareprüfungen bleiben ausdrücklich offen.
 
+Ausgeführt im Entwicklungsbranch `codex/seilwinde-v3`: [Implementierung/Befehle](../entwicklung/seilwinde_v3/README.md), [tatsächliche Testergebnisse](../entwicklung/seilwinde_v3/reports/test_report.md), [offene Hardwareabnahme](../entwicklung/seilwinde_v3/hardware/README.md). Der folgende Originalauftrag bleibt die nachvollziehbare Abnahmegrundlage.
+
 ---
 
 Entwickle die Software **V3.0** der RC-Schleppseilwinde im Repository `timschloemer109-max/rc-schleppseilwinde-v2`. Setze die Entwicklung um und führe alle in deiner Umgebung möglichen sinnvollen Tests aus. Liefere funktionsfähigen, reproduzierbar baubaren Code, Testwerkzeuge und einen ehrlichen Testbericht. Arbeite schrittweise weiter; ein Plan allein erfüllt den Auftrag nicht.
