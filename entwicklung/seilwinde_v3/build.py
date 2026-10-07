@@ -41,6 +41,8 @@ def native(args) -> None:
     run([sys.executable, str(ROOT / 'simulator' / 'exbus_master.py'), '--self-test'])
     for test in sorted((ROOT / 'tests').glob('test_*.py')):
         extra = ['--sanitize'] if args.sanitize and test.name in {'test_r4_adapters.py', 'test_simulator.py'} else []
+        if test.name == 'test_jeti_bridge.py':
+            extra = ['--compiler', compiler, '--sanitize' if args.sanitize else '--no-sanitize']
         run([sys.executable, str(test), *extra])
     print(f'PASS: {len(tests)} native suites and independent EX-Bus fixtures')
 

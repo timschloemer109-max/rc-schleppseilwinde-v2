@@ -109,6 +109,13 @@ RC-Failsafe muss auf Alter **frischer, gültiger Kanaldaten** beruhen. Telemetri
 
 [JETI Studio](https://www.jetimodel.com/support/jeti-studio/jeti-studio.html) enthält offiziell einen DC/DS-24-Senderemulator. Er ist für Senderoberfläche/Lua-Tests zu untersuchen. Eine vollständige EX-Bus-Empfänger- und RA4M1-Hardwareemulation ist damit nicht nachgewiesen; die Recherche hat keinen für diesen Gesamtaufbau bestätigten fertigen Emulator ergeben.
 
+Ausgeführter Stand: Studio 1.2.3 installiert, DC/DS-24II 6.04 mit eigener
+Lua-/Loopback-Brücke zur echten portablen V3-Logik getestet. RUN, Endschalter,
+Failsafe und Rückkehr ohne Wiederanlauf sowie JETIBOX-/decodierte EX-Anzeige
+bestanden. [Konkreter GUI-Testbericht](../entwicklung/seilwinde_v3/reports/jeti_studio_test.md)
+belegt Ergebnisse und Grenzen; native EX-Sensorinjektion/Funk-/R4-Emulation
+bleiben unbewiesen.
+
 Zusätzlich einen EX-Bus-Testtreiber auf Basis der öffentlichen Spezifikation bauen oder einen nachweislich geeigneten vorhandenen verwenden: deterministische Kanaldaten, Telemetrie-/JETIBOX-Anfragen, Byte-Fragmentierung, CRC-/Längenfehler, Paketverlust, Timeout, Rückkehr und Überlast. Gemeinsame Encoder-/Decoderfehler durch unabhängig berechnete Referenztelegramme vermeiden. Ein Hostmodell prüft Logik, kein echtes UART-Timing.
 
 Abnahme mindestens:

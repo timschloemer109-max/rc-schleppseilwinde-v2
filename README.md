@@ -4,6 +4,9 @@
 
 **V3.0** ist unter [entwicklung/seilwinde_v3/](entwicklung/seilwinde_v3/README.md) implementiert: portable Sicherheitslogik, EX Bus/JETIBOX, CSV, Tests und Nano-R4-Adapter. [Anforderungen](docs/software_v3_0.md), [Auftrag](docs/codex_v3_0_auftrag.md) und [tatsächliche Testergebnisse](entwicklung/seilwinde_v3/reports/test_report.md) sind dokumentiert. Der Standardbuild sperrt Motorbewegungen; Hardwareabnahme bleibt offen. V2.0 bleibt unveränderte Referenz.
 
+JETI Studio ist installiert und die virtuelle Senderverbindung über Lua/Hostbrücke
+zum V3-Kern getestet: [GUI-Ergebnisse und Einrichtung](entwicklung/seilwinde_v3/reports/jeti_studio_test.md).
+
 Versorgung: Steuerung/Sensoren aus der RC-Anlage, Motor über ESC aus separatem **2S-LiPo**; der ESC-BEC ist unbenutzt. Bei der derzeitigen 6-V-RC-Versorgung des Schleppers ist ein passender Wandler auf stabile 5 V für die Steuerung vorgeschrieben, Auswahl/Einbau noch offen. Details: [Hardware](docs/hardware.md).
 
 Dieses Projekt entwickelt die Steuerung einer RC-Schleppseilwinde fuer Modellflugzeuge weiter. Der belastbare neue Arbeitsstand ist die erste Hardware-Version `Schleppseilwinde_V2_0` im Ordner `src/`.

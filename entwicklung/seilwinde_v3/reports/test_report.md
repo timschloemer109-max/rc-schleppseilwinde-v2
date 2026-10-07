@@ -21,11 +21,12 @@ wurden geprüft und erhalten; keine V2-Firmwareänderung, kein automatischer Mer
 | Echter Testmaster → Application/Core | **bestanden** | 14 deterministische 8-s-Replays bei beiden Baudraten: normal/loss/noise/overload, simulierte Hall-/Endschalter-/Stromeingaben, volle Loggerqueue. RUN mit Default-Arming bei 4026–4062 ms; Kanalverlust stoppt bei 4698/4704 ms; RUN bei Signalrückkehr startet nicht neu |
 | Tatsächliche UART-/PWM-Adapterquellen mit API-Spies | **bestanden** | 48 Checks: initiale/100 wiederholt erhaltene 1000-µs-STOP-Pulse, aktiver 1800-µs-Puls unmittelbar LOW, Disable, PRIMASK, RX-Zeitstempel/Ring/Overflow, RX pending verhindert TX, eigenes Echo ignoriert, TX_COMPLETE statt TX_EMPTY, verlorene TEI/Überlauf-Watchdog. Spies sind keine MCU-Emulation |
 | Passiver Pi-Loggerparser | **bestanden** | Vier Python-Tests: V2/V3 Normalisierung, Version/Recordtyp, Header/Debug/Teilzeilen. Kein Serialgerät geöffnet |
-| Strenge native Warnungen / ASan / UBSan | **bestanden** | Alle fünf nativen Suiten und beide kompilierten Python-Treiber ohne Befund. `-Wall -Wextra -Wpedantic -Werror -Wconversion -Wsign-conversion -Wshadow`, C++11; Windows LeakSanitizer nicht verfügbar, Linux-CI aktiviert ihn |
+| Strenge native Warnungen / ASan / UBSan | **bestanden** | Alle fünf nativen Suiten, Adapter-/Replaytreiber und neuer JETI-Live-Bridge-Test ohne Befund; zuletzt als Gesamtprüfung wiederholt. `-Wall -Wextra -Wpedantic -Werror -Wconversion -Wsign-conversion -Wshadow`, C++11; Windows LeakSanitizer nicht verfügbar, Linux-CI aktiviert ihn |
 | Vollständiger Nano-R4-Build 125000 | **bestanden** | CLI 1.4.1, Core 1.6.0, echter FSP-/GPT-/ADC-/Flash-ISR-Link; 69.704 Byte Flash / 8.888 Byte globale RAM-Belegung |
 | Vollständiger Nano-R4-Build 250000 | **bestanden** | Dasselbe vollständige Firmwareprofil mit fixierter zweiter Baudrate; gleiche Ressourcenbelegung |
 | Reale JETI/R4-Pegel als Direktanschluss | **fehlgeschlagen** als Garantienachweis | JETI HIGH≥3,0/LOW≤1,5 V gegenüber R4@5 V HIGH≥4,0/LOW≤1,0 V. Qualifizierter Pegel-/Half-Duplex-Treiber nötig; keine Messwerte erfunden |
-| JETI-Studio-GUI/Senderemulator | **nicht ausführbar** | Keine Installation/Prozess gefunden, kein Sender/Empfänger; offizielle Sender-/Lua-Funktionen recherchiert, keine RA4M1-/EX-Bus-Hardwareemulation nachgewiesen |
+| JETI-Studio-GUI/Senderemulator | **bestanden** für Lua-/Host-Verbindung | Studio 1.2.3 installiert, DC/DS-24II 6.04 gestartet; RUN/autonome Fahrt, Endschalter, Learn-Ablehnung, RC-Verlust und Rückkehr mit gehaltenem RUN tatsächlich geprüft; JETIBOX/EX-Werte in Lua sichtbar. [Konkrete Ergebnisse und Nachweis](jeti_studio_test.md). Native Funk-/EX-Empfänger-/RA4M1-Emulation nicht nachgewiesen |
+| JETI-Live-Bridge-Regression | **bestanden** | Strenge Warnungen, ASan/UBSan; tatsächlicher Core/EX Bus plus Loopback-TCP, doppelte Proben halten RC nicht frisch, Zeit läuft getrennt weiter, gehaltenes RUN startet nach Rückkehr nicht; 15 Messwerte und unabhängige CRC-Prüfung |
 | Reale R4-/ESC-/Flash-/Versorgungs-/Motorprüfung | **nicht ausführbar** | CLI-Portinventar leer; kein Upload, kein Motorlauf. [Werkbank-Abnahme HW-01…15](../hardware/README.md) vollständig offen |
 | GitHub CI | **bestanden** | [Run 37615791297](https://github.com/timschloemer109-max/rc-schleppseilwinde-v2/actions/runs/37615791297) für `c1f2cbdeaeca6ff02eff716418089a4c9618da23`: alle drei Jobs erfolgreich, native ASan/UBSan einschließlich LeakSanitizer unter Ubuntu 24.04 und vollständige Nano-R4-Builds 125000/250000 aus sauberem Checkout |
 
@@ -37,6 +38,12 @@ Reviewbarer Entwicklungsstand: [Draft-PR #2](https://github.com/timschloemer109-
 Der erfolgreiche CI-Commit enthält dieselben Firmware-/Testquellen wie der oben
 genannte Implementierungscommit; spätere reine Berichtsänderungen ändern diese
 Testergebnisse nicht.
+
+Die spätere [JETI-Studio-Ergänzung](jeti_studio_test.md) fügt Testbrücke, Lua-App
+und Regressionen hinzu; Firmware-/Corequellen bleiben identisch. Der obige CI-Lauf
+gehört zum ursprünglichen Firmwarestand. Die neue Bridge wurde lokal im gesamten
+nativen Build geprüft und wird über denselben CI-Testaufruf automatisch mitgeprüft;
+der jeweils aktuelle CI-Lauf ist im PR verlinkt.
 
 ## Reproduzieren / Werkzeuge
 

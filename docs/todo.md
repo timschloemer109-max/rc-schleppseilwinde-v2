@@ -11,7 +11,8 @@
 - [ ] ACS712-Variante/ADC-Referenz/Sensitivität und Stallkalibrierung messen
 - [ ] uniLIGHT-Befehl und 20–30-A-High-Side-Treiber festlegen; deaktivierte Adapter ersetzen und prüfen
 - [ ] Reale UART/PWM/Endschalterlatenz, Brownout/EMV und Lasttests; Beaufsichtigung vor Motorfreigabe
-- [ ] JETI Studio installieren und Sender-Menü-/Telemetrieanzeige prüfen; keine R4/EX-Bus-Hardwareemulation behaupten
+- [x] JETI Studio 1.2.3 installiert, Sender-Lua-/Hostbrücke tatsächlich geprüft: Menü/EX-Anzeige, Endschalter, Failsafe, gehaltenes RUN bei Rückkehr; [Nachweis](../entwicklung/seilwinde_v3/reports/jeti_studio_test.md)
+- [ ] Native JETI-Telemetrie/JETIBOX über realen Empfänger, Modellmischer und Sender-Sprachwarnungen prüfen; kein Emulatornachweis für Funk/R4
 - [ ] Passiven Pi-Logger am echten USB-Aufbau prüfen; keine Flugfreigabe aus Hosttests
 
 ## Ursprünglicher V3.0-Auftragsplan

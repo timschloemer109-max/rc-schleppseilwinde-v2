@@ -8,6 +8,7 @@
 - Unklassifizierte Hall-Bewegung/Boot ohne Endlage macht Position unbekannt; erster RUN SLOW. Voll-Lernen nur ab Nullreferenz, Lernen in RAM, explizites Save in getrennten Flashlöschblöcken mit neuer Arming-/Neutralfolge.
 - RC-Failsafe 100 ms nach letztem gültigem Kanalframe; Menü/Telemetrie zählen nicht. Öffentliches Format erkennt Hold nicht: Empfänger-Hold-Ausgabe muss ausgeschaltet sein.
 - Asynchrones Flashcommit sperrt Menüübernahme/Motor. Loggerverlust beeinflusst keine Freigabe. Simulationsnachweise von echten Hardwaremessungen getrennt.
+- JETI Studio 1.2.3/DC/DS-24II 6.04 nutzt für den virtuellen Test eine eigene Emulator-Lua-/Loopback-Brücke zum echten Core/EX-Bus-Parser. Native Sensor-/Funkinjektion nicht belegt; [GUI-Nachweis](../entwicklung/seilwinde_v3/reports/jeti_studio_test.md) separat von Hardwareabnahme.
 
 [Befehle und Verhalten](../entwicklung/seilwinde_v3/README.md), [Testergebnisse](../entwicklung/seilwinde_v3/reports/test_report.md).
 

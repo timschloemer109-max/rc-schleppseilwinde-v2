@@ -32,6 +32,7 @@ Die nächste Generation heißt V3.0. Vor Änderungen `docs/software_v3_0.md` und
 - Endschalter vor/innerhalb/nach begrenzter Busbearbeitung. Sicherheitsstopp übersteuert Rampen. LEARN ist manuelles Ausziehen bei STOP-PWM, Voll-Lernen nur ab Nullreferenz.
 - Keine synchronen `Serial1.write/flush`, `analogRead`, `EEPROM.update` oder Servo-Defaultattach in den Steuerpfad übernehmen; SCI2/GPT/ADC/Flash-BGO-Adapter verwenden.
 - Gültige 1000-us-STOP-Pulse erhalten. RX/TX-Turnaround und asynchrones Flashjournal gesondert testen; Menüübernahme und Antrieb während Commit sperren, danach neu armieren.
+- JETI-Studio-Test nutzt Emulator-Lua plus Loopback-Hostbrücke zum identischen Core. GUI-Nachweise in reports/jeti_studio_test.md; keine native Funk-/EX-Sensor-/RA4M1-Emulation daraus ableiten. Lua-uint32-Grenzen mit 32-Bit-Integern kompatibel halten.
 - Flashslot-Abstand mindestens 1024 Byte, Commitbyte zuletzt; V2-EEPROM nicht importieren. Lernen nur RAM, explizites Save im Stillstand.
 - Firmwareänderungen erfordern passende native Prüfungen, beide R4-Baudbuilds und aktualisierte Hardware-Abnahme. Kein unbeaufsichtigtes Flashen/Motorstart.
 

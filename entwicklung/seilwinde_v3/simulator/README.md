@@ -53,3 +53,13 @@ Records mit 1-ms-Schritten und nach jedem Byte ausgeführt. Das ist injizierte
 Modellzeit, kein Nachweis eines echten UART oder realer Endschalterlatenz.
 
 Quellen und Grenzen stehen in [Protokollnachweis](../reports/exbus_protocol.md).
+
+## Live-Test mit JETI Studio
+
+`jeti_bridge.py`/`jeti_live_core.cpp` ergänzen den Offline-Testmaster um einen
+Loopback-Server mit unabhängiger Zeit. Die [Emulator-App](jeti/README.md) liest
+Senderbedienelemente und zeigt echte Core-/EX-Bus-Antworten als Lua-Form an.
+Die [tatsächlich ausgeführten GUI-Tests](../reports/jeti_studio_test.md) und
+`tests/test_jeti_bridge.py` prüfen die virtuelle Verbindung einschließlich
+Failsafe bei fehlenden/duplizierten Proben und gesperrtem Wiederanlauf.
+Die Live-Bridge ersetzt weder einen Funkempfänger noch RA4M1-Peripherie.

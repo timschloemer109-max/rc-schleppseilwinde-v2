@@ -114,3 +114,21 @@ aber ausdrücklich **deaktivierte Hardwareadapter** ohne erfundene Pins/Befehle.
 ACS712-Variante, Empfängerport, Schnittstellentreiber, 5-V-Wandler und Leistungsteil
 müssen am Aufbau festgelegt werden. Siehe [Hardware](hardware/README.md),
 [Testbericht](reports/test_report.md) und [Plattformprüfung](reports/platform_qualification.md).
+
+## Virtuelle Senderverbindung
+
+JETI Studio 1.2.3/DC/DS-24II 6.04 wurde tatsächlich installiert und getestet.
+Die [Emulator-Lua-App](simulator/jeti/README.md) verbindet Senderbedienelemente
+über Loopback mit der portablen Application und dem realen EX-Bus-Parser.
+JETIBOX-Text/decodierte Telemetrie, Endschalter, Failsafe und Wiederanlaufschutz
+sind in der GUI geprüft. [Ergebnisse und LCD-Nachweis](reports/jeti_studio_test.md)
+grenzen diesen Test von nativer Funk-/EX-Sensor- und R4-Hardwareprüfung ab.
+
+```powershell
+python entwicklung/seilwinde_v3/tests/test_jeti_bridge.py --sanitize
+python entwicklung/seilwinde_v3/simulator/jeti_bridge.py --log entwicklung/seilwinde_v3/artifacts/jeti-gui-session.jsonl
+```
+
+Der Server baut den Hosthelfer, benötigt einen C++-Compiler und bleibt aktiv.
+Ctrl+C beendet ihn; kein Hardwarezugriff. Vor ca. 71 Minuten eine neue Sitzung
+starten; Host-Zeitsprünge über 1 Sekunde beenden diese Live-Testbrücke.
