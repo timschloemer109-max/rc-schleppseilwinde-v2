@@ -1,6 +1,8 @@
 # Seilwinden-Software V3.0: Anforderungen und Übergabe
 
-Stand: 2026-10-07. Diese Datei ist der Entwicklungsauftrag aus den bisherigen Wünschen und Erkenntnissen; sie beschreibt **keine bereits implementierte V3.0**. Der geprüfte Firmwarestand bleibt V2.0. Der Repositoryname bleibt zunächst unverändert.
+Stand: 2026-10-07. Diese Datei bleibt die zentrale Anforderungsspezifikation. V3.0 ist jetzt als softwareseitig geprüfter Entwicklungsstand unter [entwicklung/seilwinde_v3/](../entwicklung/seilwinde_v3/README.md) implementiert. [Tatsächliche Ergebnisse und offene Abnahme](../entwicklung/seilwinde_v3/reports/test_report.md) trennen Host-/Buildnachweise von ungemessener Hardware. V2.0 bleibt unveränderte Referenz; Repositoryname unverändert.
+
+Nano R4/Core 1.6.0 ist für beide Baudprofile baubar. UART/GPT-PWM/ADC/Flash-BGO sind eigene begrenzte Adapter; JetiExBus/Servo werden nicht verlinkt. Motorfreigabe standardmäßig gesperrt, uniLIGHT-/High-Side-Adapter ausdrücklich deaktiviert, Stromkalibrierung offen. Aus der Pegelprüfung folgt ein geeigneter Schnittstellentreiber: JETI-Garantien HIGH>=3,0/LOW<=1,5 V reichen für R4@5 V mit VIH>=4,0/VIL<=1,0 V nicht aus. Öffentliches Kanalformat hat kein Hold-Flag; JETI muss bei RF-Verlust keine Kanal-Hold-Frames ausgeben. Die ursprünglichen Anforderungen/Recherche unten bleiben nachvollziehbar; Ist-Stand steht im verlinkten Bericht.
 
 Der ausführbare Codex-Auftrag steht in [codex_v3_0_auftrag.md](codex_v3_0_auftrag.md). Vor Entwicklungsbeginn immer den aktuellen Branch, Code und [AGENTS.md](../AGENTS.md) prüfen.
 
@@ -106,6 +108,13 @@ RC-Failsafe muss auf Alter **frischer, gültiger Kanaldaten** beruhen. Telemetri
 ## Testwerkzeuge und Abnahme
 
 [JETI Studio](https://www.jetimodel.com/support/jeti-studio/jeti-studio.html) enthält offiziell einen DC/DS-24-Senderemulator. Er ist für Senderoberfläche/Lua-Tests zu untersuchen. Eine vollständige EX-Bus-Empfänger- und RA4M1-Hardwareemulation ist damit nicht nachgewiesen; die Recherche hat keinen für diesen Gesamtaufbau bestätigten fertigen Emulator ergeben.
+
+Ausgeführter Stand: Studio 1.2.3 installiert, DC/DS-24II 6.04 mit eigener
+Lua-/Loopback-Brücke zur echten portablen V3-Logik getestet. RUN, Endschalter,
+Failsafe und Rückkehr ohne Wiederanlauf sowie JETIBOX-/decodierte EX-Anzeige
+bestanden. [Konkreter GUI-Testbericht](../entwicklung/seilwinde_v3/reports/jeti_studio_test.md)
+belegt Ergebnisse und Grenzen; native EX-Sensorinjektion/Funk-/R4-Emulation
+bleiben unbewiesen.
 
 Zusätzlich einen EX-Bus-Testtreiber auf Basis der öffentlichen Spezifikation bauen oder einen nachweislich geeigneten vorhandenen verwenden: deterministische Kanaldaten, Telemetrie-/JETIBOX-Anfragen, Byte-Fragmentierung, CRC-/Längenfehler, Paketverlust, Timeout, Rückkehr und Überlast. Gemeinsame Encoder-/Decoderfehler durch unabhängig berechnete Referenztelegramme vermeiden. Ein Hostmodell prüft Logik, kein echtes UART-Timing.
 

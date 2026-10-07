@@ -1,6 +1,23 @@
 # Offene Punkte, Messungen und Tests
 
-## V3.0-Entwicklung ab 2026-10-07
+## V3.0 Entwicklungsübergabe 2026-10-07
+
+[Implementierung und Befehle](../entwicklung/seilwinde_v3/README.md), [Testergebnisse](../entwicklung/seilwinde_v3/reports/test_report.md).
+
+- [x] Portable Sicherheitslogik, Parameter, EX Bus/JETIBOX, CSV, deterministischer Simulator und unabhängige Referenzen
+- [x] Nicht blockierende R4-UART/PWM/ADC/Flash-Adapter, fixierter Build, native Fehler-/Fuzz-/Persistenztests mit Sanitizern
+- [x] CI für native Tests und beide EX-Bus-Baudbuilds eingerichtet
+- [ ] V3-Werkbankplan durchführen: JETI-Ausgabeport/Kanäle ohne Hold, Schnittstellentreiber/Pegel, 5-V-Wandler/Ripple/Rückspeisung
+- [ ] ACS712-Variante/ADC-Referenz/Sensitivität und Stallkalibrierung messen
+- [ ] uniLIGHT-Befehl und 20–30-A-High-Side-Treiber festlegen; deaktivierte Adapter ersetzen und prüfen
+- [ ] Reale UART/PWM/Endschalterlatenz, Brownout/EMV und Lasttests; Beaufsichtigung vor Motorfreigabe
+- [x] JETI Studio 1.2.3 installiert, Sender-Lua-/Hostbrücke tatsächlich geprüft: Menü/EX-Anzeige, Endschalter, Failsafe, gehaltenes RUN bei Rückkehr; [Nachweis](../entwicklung/seilwinde_v3/reports/jeti_studio_test.md)
+- [ ] Native JETI-Telemetrie/JETIBOX über realen Empfänger, Modellmischer und Sender-Sprachwarnungen prüfen; kein Emulatornachweis für Funk/R4
+- [ ] Passiven Pi-Logger am echten USB-Aufbau prüfen; keine Flugfreigabe aus Hosttests
+
+## Ursprünglicher V3.0-Auftragsplan
+
+Historische Aufgabenliste; tatsächlicher Abschlussstatus und noch offene Hardwarepunkte stehen oben und im V3-Testbericht.
 
 Maßgeblicher Zielstand: [software_v3_0.md](software_v3_0.md). Ausführbarer Auftrag: [codex_v3_0_auftrag.md](codex_v3_0_auftrag.md).
 

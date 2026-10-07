@@ -1,5 +1,17 @@
 # Entscheidungen und verworfene Ansaetze
 
+## Implementierter V3-Entwicklungsstand 2026-10-07
+
+- Eigene kleine EX-Bus-/EX-Implementierung nach öffentlichen Spezifikationen; keine fremde JetiExBus-Portierung, kein grafischer Device Explorer. Gemeinsamer Steuerungskern für native Tests und Firmware.
+- Nano R4/Core 1.6.0 softwareseitig qualifiziert; Hardware offen. Begrenzte SCI2/GPT/ADC-/Flash-BGO-Adapter umgehen synchrone Warteschleifen und Servo-1500-us-Initialpuls.
+- Standardprofil sperrt Motor. uniLIGHT/Leistungsausgänge deaktiviert, Stromkalibrierung unbekannt. Provisorische Pins und nötiger JETI/R4-Schnittstellentreiber separat dokumentiert.
+- Unklassifizierte Hall-Bewegung/Boot ohne Endlage macht Position unbekannt; erster RUN SLOW. Voll-Lernen nur ab Nullreferenz, Lernen in RAM, explizites Save in getrennten Flashlöschblöcken mit neuer Arming-/Neutralfolge.
+- RC-Failsafe 100 ms nach letztem gültigem Kanalframe; Menü/Telemetrie zählen nicht. Öffentliches Format erkennt Hold nicht: Empfänger-Hold-Ausgabe muss ausgeschaltet sein.
+- Asynchrones Flashcommit sperrt Menüübernahme/Motor. Loggerverlust beeinflusst keine Freigabe. Simulationsnachweise von echten Hardwaremessungen getrennt.
+- JETI Studio 1.2.3/DC/DS-24II 6.04 nutzt für den virtuellen Test eine eigene Emulator-Lua-/Loopback-Brücke zum echten Core/EX-Bus-Parser. Native Sensor-/Funkinjektion nicht belegt; [GUI-Nachweis](../entwicklung/seilwinde_v3/reports/jeti_studio_test.md) separat von Hardwareabnahme.
+
+[Befehle und Verhalten](../entwicklung/seilwinde_v3/README.md), [Testergebnisse](../entwicklung/seilwinde_v3/reports/test_report.md).
+
 ## Ergänzung 2026-10-07: V3.0 und Versorgung
 
 - Nächste Softwaregeneration: **V3.0**. Bestehende V2.0-Firmware bleibt Referenz; dies ist eine Planungsentscheidung.
